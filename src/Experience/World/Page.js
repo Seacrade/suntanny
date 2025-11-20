@@ -27,6 +27,35 @@ export default class Page {
     this.cursor = this.experience.cursor;
 
     this.setFBOParticles();
+    this.setEvents();
+  }
+
+  setEvents() {
+    this.onMouseDown = () => {
+      gsap.to(this.simulationShader.uniforms.amplitude, {
+        value: 0,
+        duration: 1,
+      });
+    };
+
+    this.onMouseUp = () => {
+      gsap.to(this.simulationShader.uniforms.amplitude, {
+        value: 48,
+        duration: 1,
+      });
+    };
+
+    window.addEventListener("mousedown", this.onMouseDown);
+    window.addEventListener("mouseup", this.onMouseUp);
+    window.addEventListener("touchstart", this.onMouseDown);
+    window.addEventListener("touchend", this.onMouseUp);
+  }
+
+  destroy() {
+    window.removeEventListener("mousedown", this.onMouseDown);
+    window.removeEventListener("mouseup", this.onMouseUp);
+    window.removeEventListener("touchstart", this.onMouseDown);
+    window.removeEventListener("touchend", this.onMouseUp);
   }
 
   makeTexture(g) {

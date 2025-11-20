@@ -32,7 +32,7 @@ const Contact = () => {
   return (
     <section
       id="contact"
-      className="relative flex flex-col justify-between min-h-screen text-white ">
+      className="relative flex flex-col justify-between min-h-screen text-white pointer-events-auto">
       {/* 🔵 Ballpit background only for this section */}
       <div className="ballpit-wrapper">
         <Ballpit

@@ -41,7 +41,7 @@ const AnimatedHeaderSection = ({
     );
   }, []);
   return (
-    <div ref={contextRef}>
+    <div ref={contextRef} className="pointer-events-auto">
       <div style={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" }}>
         <div
           ref={headerRef}

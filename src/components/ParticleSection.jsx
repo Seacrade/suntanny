@@ -30,7 +30,7 @@ const ParticleSection = ({ style, className }) => {
         zIndex: -100,
         width: "100%",
         height: "100%",
-        pointerEvents: "none", // Allow clicks to pass through if needed
+        pointerEvents: "auto", // Allow clicks to pass through if needed
         ...style,
       }}
     />

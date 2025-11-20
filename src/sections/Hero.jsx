@@ -6,9 +6,9 @@ const Hero = () => {
   return (
     <section
       id="home"
-      className="relative flex flex-col justify-end min-h-screen pb-10">
+      className="relative flex flex-col justify-end min-h-screen pb-10 pointer-events-none">
       <AnimatedHeaderSection
-        title={"Michael Truong"}
+        title={"mikey"}
         textColor={"text-[#fcc200]"}
         titleClassName="font-migha font-bold md:!flex md:!flex-col"
         subTitle={"Portfolio by"}
@@ -22,12 +22,9 @@ const Hero = () => {
           withScrollTrigger={false}
         />
       </div>
-      <figure
-        className="absolute inset-0 -z-50"
-        style={{ width: "100%", height: "100%" }}>
+      <figure className="absolute inset-0 -z-50" style={{ overflow: "hidden" }}>
         <ParticleSection />
-      </figure>{" "}
-      ;
+      </figure>
     </section>
   );
 };

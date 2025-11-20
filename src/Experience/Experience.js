@@ -167,6 +167,8 @@ export default class Experience {
     this.sizes.off("resize");
     this.time.off("tick");
 
+    if (this.world) this.world.destroy();
+
     // Traverse the whole scene
     this.scene.traverse((child) => {
       // Test if it's a mesh

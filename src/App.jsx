@@ -11,14 +11,14 @@ const App = () => {
   const [isReady, setIsReady] = useState(false);
 
   return (
-    <div className="relative w-full min-h-screen z-10">
+    <div className="relative w-full min-h-screen z-10 pointer-events-none">
       <LoadingScreen started={isReady} setStarted={setIsReady} />
       <Navbar />
       <Hero />
-      <ServiceSummary />
+      {/* <ServiceSummary />
       <About />
-      <Works />
-      <Contact />
+      <Works /> */
+      /* <Contact /> */}
     </div>
   );
 };

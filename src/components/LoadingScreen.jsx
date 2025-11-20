@@ -15,7 +15,9 @@ export const LoadingScreen = ({ started, setStarted }) => {
   return (
     <div
       className={`fixed inset-0 z-100 flex items-center justify-center bg-black transition-opacity duration-300 ${
-        started ? "opacity-0 pointer-events-none" : "opacity-100"
+        started
+          ? "opacity-0 pointer-events-none"
+          : "opacity-100 pointer-events-auto"
       }`}>
       <div
         aria-label="Orange and tan hamster running in a metal wheel"

@@ -22,15 +22,15 @@ export default class World {
 
       // Setup
       this.page = new Page();
-      //this.sun = new Sun()
+      //this.sun = new Sun();
       this.environment = new Environment();
 
       // Remove preloader
-      if (this.html.preloader) {
-        this.html.preloader.classList.add("preloaded");
-        this.html.preloader.remove();
-      }
-      if (this.html.playButton) this.html.playButton.remove();
+      // if (this.html.preloader) {
+      //   this.html.preloader.classList.add("preloaded");
+      //   this.html.preloader.remove();
+      // }
+      // if (this.html.playButton) this.html.playButton.remove();
 
       // Animation timeline
       this.animationPipeline();
@@ -80,5 +80,9 @@ export default class World {
     if (this.page) {
       this.page.update();
     }
+  }
+
+  destroy() {
+    if (this.page) this.page.destroy();
   }
 }
