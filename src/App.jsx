@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import Navbar from "./sections/Navbar";
 import Hero from "./sections/Hero";
-import ServiceSummary from "./sections/ServiceSummary";
-import About from "./sections/About";
-import Works from "./sections/Works";
-import Contact from "./sections/Contact";
+// import ServiceSummary from "./sections/ServiceSummary";
+// import About from "./sections/About";
+// import Works from "./sections/Works";
+// import Contact from "./sections/Contact";
 import { LoadingScreen } from "./components/LoadingScreen";
 import Dropdown from "./components/Dropdown";
 
