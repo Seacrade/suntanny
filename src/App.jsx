@@ -6,6 +6,7 @@ import About from "./sections/About";
 import Works from "./sections/Works";
 import Contact from "./sections/Contact";
 import { LoadingScreen } from "./components/LoadingScreen";
+import Dropdown from "./components/Dropdown";
 
 const App = () => {
   const [isReady, setIsReady] = useState(false);
@@ -14,6 +15,7 @@ const App = () => {
     <div className="relative w-full min-h-screen z-10 pointer-events-none">
       <LoadingScreen started={isReady} setStarted={setIsReady} />
       <Navbar />
+      <Dropdown />
       <Hero />
       {/* <ServiceSummary />
       <About />

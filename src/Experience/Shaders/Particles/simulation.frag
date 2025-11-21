@@ -3,6 +3,14 @@
 
 varying vec2 vUv;
 uniform sampler2D uTexture;
+uniform sampler2D uTarget;
+uniform sampler2D uTarget2;
+uniform sampler2D uTarget3;
+uniform sampler2D uTarget4;
+uniform sampler2D uTarget5;
+uniform int uState1;
+uniform int uState2;
+uniform float uTransition;
 uniform float timer;
 uniform float frequency;
 uniform float amplitude;
@@ -124,16 +132,47 @@ vec3 curl(float	x,	float	y,	float	z)
     return	curl;
 }
 
-
+vec3 getTarget(int state) {
+    if (state == 1) return texture2D(uTarget, vUv).xyz;
+    if (state == 2) return texture2D(uTarget2, vUv).xyz;
+    if (state == 3) return texture2D(uTarget3, vUv).xyz;
+    if (state == 4) return texture2D(uTarget4, vUv).xyz;
+    if (state == 5) return texture2D(uTarget5, vUv).xyz;
+    return vec3(0.0); // State 0 or fallback
+}
 
 void main() {
 
     vec3 pos = texture2D( uTexture, vUv ).xyz;
 
-    vec3 tar = pos + curl( pos.x * frequency, pos.y * frequency, pos.z * frequency ) * amplitude;
+    vec3 target1 = getTarget(uState1);
+    vec3 target2 = getTarget(uState2);
 
-    float d = length( pos-tar ) / maxDistance;
-    pos = mix( pos, tar, pow( d, 5. ) );
+    // If one of the states is 0 (Sphere), we want to transition chaosFactor.
+    // If both are non-zero, we transition between targets with chaosFactor = 1.
+    
+    float chaos1 = (uState1 == 0) ? 0.0 : 1.0;
+    float chaos2 = (uState2 == 0) ? 0.0 : 1.0;
+    
+    // Special case: If transitioning TO Sphere (0), keep the FROM target active
+    if (uState2 == 0) target2 = target1;
+    // Special case: If transitioning FROM Sphere (0), keep the TO target active
+    if (uState1 == 0) target1 = target2;
+
+    float currentChaos = mix(chaos1, chaos2, uTransition);
+    vec3 currentTarget = mix(target1, target2, uTransition);
+
+    // Sun/Sphere Behavior (Chaotic)
+    vec3 curlTarget = pos + curl( pos.x * frequency, pos.y * frequency, pos.z * frequency ) * amplitude;
+    float d = length( pos - curlTarget ) / maxDistance;
+    vec3 sunPos = mix( pos, curlTarget, pow( d, 5. ) );
+
+    // Target Behavior (Ordered)
+    // Increase mix factor to make particles snap tighter to target (less fuzzy)
+    vec3 targetPos = mix(pos, currentTarget, 0.2 + currentChaos * 0.75);
+    
+    // Mix between the two behaviors
+    pos = mix(sunPos, targetPos, currentChaos);
 
     gl_FragColor = vec4( pos, 1. );
 
