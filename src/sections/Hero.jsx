@@ -1,12 +1,11 @@
 import AnimatedHeaderSection from "../components/AnimatedHeaderSection";
 import ParticleSection from "../components/ParticleSection";
-import Particles from "../components/Particles";
 
 const Hero = () => {
   return (
     <section
       id="home"
-      className="relative flex flex-col justify-end min-h-screen pb-10 pointer-events-none">
+      className="relative flex flex-col justify-end min-h-screen pb-10">
       <AnimatedHeaderSection
         title={"mikey"}
         textColor={"text-[#fcc200]"}

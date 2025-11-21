@@ -44,7 +44,7 @@ const Dropdown = () => {
     options.find((opt) => opt.value === selectedOption)?.label || "Sphere";
 
   return (
-    <div className="fixed top-32 left-10 z-50" ref={dropdownRef}>
+    <div className="fixed top-12 left-10 z-50" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="px-6 py-2 text-white border border-white/30 rounded-full font-migha font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300 pointer-events-auto backdrop-blur-sm flex items-center gap-2 min-w-[160px] justify-between">

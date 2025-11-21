@@ -133,12 +133,13 @@ vec3 curl(float	x,	float	y,	float	z)
 }
 
 vec3 getTarget(int state) {
+    if (state == 0) return texture2D(uTexture, vUv).xyz;
     if (state == 1) return texture2D(uTarget, vUv).xyz;
     if (state == 2) return texture2D(uTarget2, vUv).xyz;
     if (state == 3) return texture2D(uTarget3, vUv).xyz;
     if (state == 4) return texture2D(uTarget4, vUv).xyz;
     if (state == 5) return texture2D(uTarget5, vUv).xyz;
-    return vec3(0.0); // State 0 or fallback
+    return texture2D(uTexture, vUv).xyz; // State 0 or fallback
 }
 
 void main() {
