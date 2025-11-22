@@ -199,6 +199,20 @@ export default class ParticleSystem {
     });
   }
 
+  setColor(color, duration = 1) {
+    if (!this.isReady) return;
+
+    const targetColor = new THREE.Color(color);
+
+    gsap.to(this.renderShader.uniforms.uColor.value, {
+      r: targetColor.r,
+      g: targetColor.g,
+      b: targetColor.b,
+      duration: duration,
+      ease: "power2.inOut",
+    });
+  }
+
   resize() {
     if (!this.isReady) return;
     this.FBO.resize(CONFIG.width, CONFIG.height);

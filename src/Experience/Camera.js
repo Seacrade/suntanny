@@ -40,8 +40,8 @@ export default class Camera {
     this.controls = new OrbitControls(this.instance, this.canvas);
     this.controls.enableDamping = true;
     this.controls.minDistance = 1;
-    this.controls.maxDistance = 2500;
-    this.controls.enabled = true;
+    this.controls.maxDistance = 20500;
+    this.controls.enabled = false; // Disable controls for Story Mode
     this.controls.target = new THREE.Vector3(0, 0, 0);
 
     // this.controls.mouseButtons = {
@@ -64,15 +64,13 @@ export default class Camera {
     this.instance.updateMatrixWorld(); // To be used in projection
   }
 
-  animateCameraPosition() {
-    gsap.fromTo(
+  animateCamera(duration, fromProps, toProps) {
+    const finalDuration = duration || 1.5;
+
+    return gsap.fromTo(
       this.instance.position,
-      { z: -3500 },
-      {
-        z: -400,
-        duration: 2.5,
-        ease: "power4.out",
-      }
+      { ...fromProps },
+      { ...toProps, duration: finalDuration }
     );
   }
 }

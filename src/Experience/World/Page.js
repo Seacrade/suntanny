@@ -21,25 +21,14 @@ export default class Page {
   }
 
   setEvents() {
-    this.onMouseDown = () => {
-      this.particleSystem.setAmplitude(0, 3);
-    };
-
-    this.onMouseUp = () => {
-      this.particleSystem.setAmplitude(248, 3);
-    };
-
-    window.addEventListener("mousedown", this.onMouseDown);
-    window.addEventListener("mouseup", this.onMouseUp);
-    window.addEventListener("touchstart", this.onMouseDown);
-    window.addEventListener("touchend", this.onMouseUp);
+    // Mouse events removed for Story Mode
   }
 
   destroy() {
-    window.removeEventListener("mousedown", this.onMouseDown);
-    window.removeEventListener("mouseup", this.onMouseUp);
-    window.removeEventListener("touchstart", this.onMouseDown);
-    window.removeEventListener("touchend", this.onMouseUp);
+    // window.removeEventListener("mousedown", this.onMouseDown);
+    // window.removeEventListener("mouseup", this.onMouseUp);
+    // window.removeEventListener("touchstart", this.onMouseDown);
+    // window.removeEventListener("touchend", this.onMouseUp);
   }
 
   morph(newState) {

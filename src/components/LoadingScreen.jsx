@@ -1,17 +1,6 @@
-import { useProgress } from "@react-three/drei";
 import { useEffect } from "react";
 
 export const LoadingScreen = ({ started, setStarted }) => {
-  const { progress } = useProgress();
-
-  useEffect(() => {
-    if (progress === 100) {
-      setTimeout(() => {
-        setStarted(true);
-      }, 100);
-    }
-  }, [progress, setStarted]);
-
   return (
     <div
       className={`fixed inset-0 z-100 flex items-center justify-center bg-black transition-opacity duration-300 ${

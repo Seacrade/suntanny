@@ -140,7 +140,7 @@ body {
   color: black;
   scroll-behavior: smooth;
   overflow-x: hidden;
-  font-family: var(--font-amiamie);
+  font-family: var(--font-serif);
 }
 
 @utility clip-path {

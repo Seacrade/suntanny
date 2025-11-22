@@ -1,7 +1,7 @@
 import Experience from "../Experience.js";
 import Environment from "./Environment.js";
 import Page from "./Page.js";
-import Sun from "./Sun.js";
+// import Sun from "./Sun.js";
 
 export default class World {
   constructor() {
@@ -64,8 +64,12 @@ export default class World {
   animationPipeline() {
     // if ( this.text )
     //     this.text.animateTextShow()
-
-    if (this.camera) this.camera.animateCameraPosition();
+    this.camera.animateCamera(
+      2.5, // duration
+      { z: -3500 }, // fromProps (start z at -3500)
+      { z: -999, ease: "power4.out" } // toProps (end z at -400 with an ease)
+    );
+    //if (this.camera) this.camera.animateCameraPosition();
   }
 
   resize() {
