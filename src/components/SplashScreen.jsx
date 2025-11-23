@@ -2,7 +2,7 @@ import React from "react";
 
 const SplashScreen = ({ onStart }) => {
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80 text-white backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center text-white">
       <h1 className="text-6xl md:text-9xl font-bold mb-8 text-center tracking-tighter">
         The Furnace Heart
       </h1>

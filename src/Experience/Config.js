@@ -19,5 +19,6 @@ export const CONFIG = {
     torus: { radius: 150, tube: 50 },
     dna: { radius: 100, height: 400 },
     heart: 150,
+    wave: { width: 400, depth: 400 },
   },
 };

@@ -1,20 +1,34 @@
-import * as THREE from "three";
+// Removed THREE import to save memory in Worker
+// import * as THREE from "three";
 
-function getPoint(v, size) {
-  v.x = Math.random() * 2 - 1;
-  v.y = Math.random() * 2 - 1;
-  v.z = Math.random() * 2 - 1;
-  v.w = 0.0;
-  if (v.length() > 1) return getPoint(v, size);
-  return v.normalize().multiplyScalar(size);
+const COLORS = {
+  orangered: { r: 1, g: 0.27, b: 0 },
+  white: { r: 1, g: 1, b: 1 },
+  black: { r: 0, g: 0, b: 0 },
+  cyan: { r: 0, g: 1, b: 1 },
+  magenta: { r: 1, g: 0, b: 1 },
+  hotpink: { r: 1, g: 0.41, b: 0.71 },
+  lime: { r: 0, g: 1, b: 0 },
+};
+
+function getPoint(size) {
+  let x, y, z, len;
+  do {
+    x = Math.random() * 2 - 1;
+    y = Math.random() * 2 - 1;
+    z = Math.random() * 2 - 1;
+    len = x * x + y * y + z * z;
+  } while (len > 1 || len === 0);
+
+  const s = size / Math.sqrt(len);
+  return { x: x * s, y: y * s, z: z * s };
 }
 
 export function getSphere(count, size) {
   var len = count * 4;
   var data = new Float32Array(len);
-  var p = new THREE.Vector3();
   for (var i = 0; i < len; i += 4) {
-    getPoint(p, size);
+    const p = getPoint(size);
     data[i] = p.x;
     data[i + 1] = p.y;
     data[i + 2] = p.z;
@@ -26,7 +40,7 @@ export function getSphere(count, size) {
 export function getCube(count, size) {
   const positions = new Float32Array(count * 4);
   const colors = new Float32Array(count * 3);
-  const c = new THREE.Color("orangered"); // Orangered cube
+  const c = COLORS.orangered;
 
   for (let i = 0; i < count; i++) {
     const face = Math.floor(Math.random() * 6);
@@ -83,7 +97,7 @@ export function getCube(count, size) {
 export function getYinYang(count, radius) {
   const positions = new Float32Array(count * 4);
   const colors = new Float32Array(count * 3);
-  const c = new THREE.Color(0xff0000); // Red
+  const c = { r: 1, g: 0, b: 0 }; // Red
 
   const smallR = radius / 2;
   const dotR = radius / 8;
@@ -143,8 +157,8 @@ export function getYinYang(count, radius) {
 export function getDNA(count, radius, height) {
   const positions = new Float32Array(count * 4);
   const colors = new Float32Array(count * 3);
-  const c1 = new THREE.Color("cyan");
-  const c2 = new THREE.Color("magenta");
+  const c1 = COLORS.cyan;
+  const c2 = COLORS.magenta;
 
   for (let i = 0; i < count; i++) {
     const t = Math.random();
@@ -173,7 +187,7 @@ export function getDNA(count, radius, height) {
 export function getHeart(count, scale) {
   const positions = new Float32Array(count * 4);
   const colors = new Float32Array(count * 3);
-  const c = new THREE.Color("hotpink");
+  const c = COLORS.hotpink;
 
   for (let i = 0; i < count; i++) {
     let x, y;
@@ -200,7 +214,7 @@ export function getHeart(count, scale) {
 export function getTorus(count, R, r) {
   const positions = new Float32Array(count * 4);
   const colors = new Float32Array(count * 3);
-  const c = new THREE.Color("lime");
+  const c = COLORS.lime;
 
   for (let i = 0; i < count; i++) {
     const u = Math.random() * Math.PI * 2;
@@ -218,6 +232,37 @@ export function getTorus(count, R, r) {
     colors[i * 3 + 0] = c.r;
     colors[i * 3 + 1] = c.g;
     colors[i * 3 + 2] = c.b;
+  }
+  return { positions, colors };
+}
+
+export function getWave(count, width, depth) {
+  const positions = new Float32Array(count * 4);
+  const colors = new Float32Array(count * 3);
+  const white = { r: 1, g: 1, b: 1 };
+
+  const AMOUNTX = Math.ceil(Math.sqrt(count));
+  const AMOUNTY = Math.ceil(count / AMOUNTX);
+
+  const stepX = width / AMOUNTX;
+  const stepZ = depth / AMOUNTY;
+
+  for (let i = 0; i < count; i++) {
+    const ix = i % AMOUNTX;
+    const iy = Math.floor(i / AMOUNTX);
+
+    const x = (ix - AMOUNTX / 2) * stepX;
+    const z = (iy - AMOUNTY / 2) * stepZ;
+    const y = 0;
+
+    positions[i * 4 + 0] = x;
+    positions[i * 4 + 1] = y;
+    positions[i * 4 + 2] = z;
+    positions[i * 4 + 3] = 0;
+
+    colors[i * 3 + 0] = white.r;
+    colors[i * 3 + 1] = white.g;
+    colors[i * 3 + 2] = white.b;
   }
   return { positions, colors };
 }

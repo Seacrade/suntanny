@@ -66,8 +66,8 @@ export default class World {
     //     this.text.animateTextShow()
     this.camera.animateCamera(
       2.5, // duration
-      { z: -3500 }, // fromProps (start z at -3500)
-      { z: -999, ease: "power4.out" } // toProps (end z at -400 with an ease)
+      { z: -3500, x: 100, y: 150 }, // fromProps (start z at -3500)
+      { x: -100, y: -100, z: -100, ease: "power4.out" } // toProps (end z at -400 with an ease)
     );
     //if (this.camera) this.camera.animateCameraPosition();
   }

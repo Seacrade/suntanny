@@ -28,15 +28,27 @@ const App = () => {
     return () => clearInterval(checkExperience);
   }, []);
 
+  const handleStart = () => {
+    setStoryStarted(true);
+    if (
+      window.experience &&
+      window.experience.world &&
+      window.experience.world.page &&
+      window.experience.world.page.particleSystem
+    ) {
+      window.experience.world.page.particleSystem.morph(0, 3, "sine.inOut");
+    }
+  };
+
   return (
     <div className="relative w-full min-h-screen z-10 pointer-events-none">
       <LoadingScreen started={isReady} setStarted={setIsReady} />
       {isReady && !storyStarted && (
         <div className="pointer-events-auto">
-          <SplashScreen onStart={() => setStoryStarted(true)} />
+          <SplashScreen onStart={handleStart} />
         </div>
       )}
-      <ParticleSection className="fixed top-0 left-0 w-full h-full -z-10" />
+      <ParticleSection className="fixed top-0 left-0 w-full h-full" />
 
       {storyStarted && (
         <>

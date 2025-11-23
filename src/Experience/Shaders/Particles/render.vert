@@ -10,11 +10,13 @@ attribute vec3 aTargetColor2;
 attribute vec3 aTargetColor3;
 attribute vec3 aTargetColor4;
 attribute vec3 aTargetColor5;
+attribute vec3 aTargetColor6;
 varying vec3 vTargetColor;
 varying vec3 vTargetColor2;
 varying vec3 vTargetColor3;
 varying vec3 vTargetColor4;
 varying vec3 vTargetColor5;
+varying vec3 vTargetColor6;
 varying float size;
 void main() {
 
@@ -23,6 +25,7 @@ void main() {
     vTargetColor3 = aTargetColor3;
     vTargetColor4 = aTargetColor4;
     vTargetColor5 = aTargetColor5;
+    vTargetColor6 = aTargetColor6;
 
     //the mesh is a nomrliazed square so the uvs = the xy positions of the vertices
     vec3 pos = texture2D( positions, position.xy ).xyz;

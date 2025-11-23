@@ -11,6 +11,7 @@ varying vec3 vTargetColor2;
 varying vec3 vTargetColor3;
 varying vec3 vTargetColor4;
 varying vec3 vTargetColor5;
+varying vec3 vTargetColor6;
 varying float size;
 
 vec3 getColor(int state) {
@@ -20,6 +21,7 @@ vec3 getColor(int state) {
     if (state == 3) return vTargetColor3;
     if (state == 4) return vTargetColor4;
     if (state == 5) return vTargetColor5;
+    if (state == 6) return vTargetColor6;
     return uColor;
 }
 
@@ -30,6 +32,7 @@ float getAlpha(int state) {
     if (state == 3) return 0.6;
     if (state == 4) return 0.5; // DNA
     if (state == 5) return 0.6; // Heart
+    if (state == 6) return 0.1; // Wave (Lower alpha for less brightness)
     return 0.8;
 }
 

@@ -5,6 +5,7 @@ import {
   getDNA,
   getHeart,
   getTorus,
+  getWave,
 } from "./Geometry.js";
 
 self.onmessage = (e) => {
@@ -14,41 +15,57 @@ self.onmessage = (e) => {
     const count = config.particleCount;
     const sizes = config.sizes;
 
-    // Perform calculations
-    const sphereData = getSphere(count, sizes.sphere);
-    const cubeData = getCube(count, sizes.cube);
-    const yinYangData = getYinYang(count, sizes.yinYang);
-    const torusData = getTorus(count, sizes.torus.radius, sizes.torus.tube);
-    const dnaData = getDNA(count, sizes.dna.radius, sizes.dna.height);
-    const heartData = getHeart(count, sizes.heart);
+    try {
+      // Sphere
+      const sphereData = getSphere(count, sizes.sphere);
+      self.postMessage(
+        { type: "asset", name: "sphereData", data: sphereData },
+        [sphereData.buffer]
+      );
 
-    // Collect Transferables (buffers) to send without copying
-    // Note: sphereData is a Float32Array, so we transfer its buffer.
-    // cubeData is { positions, colors }, so we transfer both buffers.
-    const transferables = [
-      sphereData.buffer,
-      cubeData.positions.buffer,
-      cubeData.colors.buffer,
-      yinYangData.positions.buffer,
-      yinYangData.colors.buffer,
-      torusData.positions.buffer,
-      torusData.colors.buffer,
-      dnaData.positions.buffer,
-      dnaData.colors.buffer,
-      heartData.positions.buffer,
-      heartData.colors.buffer,
-    ];
+      // Cube
+      const cubeData = getCube(count, sizes.cube);
+      self.postMessage({ type: "asset", name: "cubeData", data: cubeData }, [
+        cubeData.positions.buffer,
+        cubeData.colors.buffer,
+      ]);
 
-    self.postMessage(
-      {
-        sphereData,
-        cubeData,
-        yinYangData,
-        torusData,
-        dnaData,
-        heartData,
-      },
-      transferables
-    );
+      // YinYang
+      const yinYangData = getYinYang(count, sizes.yinYang);
+      self.postMessage(
+        { type: "asset", name: "yinYangData", data: yinYangData },
+        [yinYangData.positions.buffer, yinYangData.colors.buffer]
+      );
+
+      // Torus
+      const torusData = getTorus(count, sizes.torus.radius, sizes.torus.tube);
+      self.postMessage({ type: "asset", name: "torusData", data: torusData }, [
+        torusData.positions.buffer,
+        torusData.colors.buffer,
+      ]);
+
+      // DNA
+      const dnaData = getDNA(count, sizes.dna.radius, sizes.dna.height);
+      self.postMessage({ type: "asset", name: "dnaData", data: dnaData }, [
+        dnaData.positions.buffer,
+        dnaData.colors.buffer,
+      ]);
+
+      // Heart
+      const heartData = getHeart(count, sizes.heart);
+      self.postMessage({ type: "asset", name: "heartData", data: heartData }, [
+        heartData.positions.buffer,
+        heartData.colors.buffer,
+      ]);
+
+      // Wave
+      const waveData = getWave(count, sizes.wave.width, sizes.wave.depth);
+      self.postMessage({ type: "asset", name: "waveData", data: waveData }, [
+        waveData.positions.buffer,
+        waveData.colors.buffer,
+      ]);
+    } catch (error) {
+      console.error("Worker generation error:", error);
+    }
   }
 };

@@ -31,8 +31,8 @@ export default class Page {
     // window.removeEventListener("touchend", this.onMouseUp);
   }
 
-  morph(newState) {
-    this.particleSystem.morph(newState);
+  morph(newState, duration = 2, ease = "power2.inOut") {
+    this.particleSystem.morph(newState, duration, ease);
   }
 
   resize() {

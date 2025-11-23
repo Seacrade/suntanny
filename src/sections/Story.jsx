@@ -1,6 +1,7 @@
 import React, { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import ParallaxText from "../components/ParallaxText";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,12 +16,16 @@ const Story = ({ isReady }) => {
       if (!experience || !experience.world || !experience.world.page) return;
 
       const particleSystem = experience.world.page.particleSystem;
-      const camera = experience.camera.instance;
+      const camera = experience.camera;
 
       // Initial State: Emptyness before the big bang (Blue/Purple)
-      particleSystem.setAmplitude(0, 0);
-      particleSystem.setColor("white", 0); // Indigo/Purple
-      camera.position.set(0, 0, -555);
+      console.log(camera.getPosition());
+      particleSystem.setAmplitude(100, 3, "sine.in");
+      particleSystem.setColor("#4b0082", 3, "sine.inOut"); // Indigo/Purple
+      particleSystem.setRotation(true);
+      // Animate smoothly from current position to z: -400
+
+      camera.animateCameraTo({ z: -400 }, 2.5);
 
       // Section 1: The Void & The Command
       ScrollTrigger.create({
@@ -30,7 +35,7 @@ const Story = ({ isReady }) => {
         scrub: true,
         onEnter: () => {
           // Chaos -> Order
-          particleSystem.setAmplitude(0, 3);
+          particleSystem.setAmplitude(30, 3);
           particleSystem.setColor("#ffffff", 3); // White/Metallic
         },
         onLeaveBack: () => {
@@ -113,35 +118,35 @@ const Story = ({ isReady }) => {
         id="section-landing"
         className="min-h-screen flex flex-col items-center justify-center p-8">
         <div className="max-w-4xl text-center space-y-12">
-          <p className="text-2xl md:text-4xl font-light opacity-90 mix-blend-difference">
+          <ParallaxText className="text-2xl md:text-4xl font-light opacity-90 mix-blend-difference">
             Before existence knew its own name, the cosmos held its breath in a
             timeless pause. In the deep silence of the void, the universe
             trembled, as if gathering the courage to be. A whisper of potential
             drifting through the dark.
-          </p>
-          <div className="h-32"></div> {/* Spacer for timing */}
-          <p className="text-2xl md:text-4xl font-light opacity-80 mix-blend-difference">
+          </ParallaxText>
+          <div className="h-52"></div> {/* Spacer for timing */}
+          <ParallaxText className="text-2xl md:text-4xl font-light opacity-80 mix-blend-difference">
             Then in its final moment of peace, the silence shattered.
-          </p>
+          </ParallaxText>
         </div>
       </section>
       <section
         id="section-1"
         className="min-h-screen flex flex-col items-center justify-center p-8">
         <div className="max-w-4xl text-center space-y-12">
-          <p className="text-2xl md:text-4xl font-light opacity-90 mix-blend-difference">
+          <ParallaxText className="text-2xl md:text-4xl font-light opacity-90 mix-blend-difference">
             The cosmos erupted into absolute CHAOS, taking its first, violent
             breath of pure fury. The roar of creation was magnificent, a
             brilliance so violent it humbled the void itself.
-          </p>
+          </ParallaxText>
           <div className="h-32"></div> {/* Spacer for timing */}
-          <p className="text-2xl md:text-4xl font-light opacity-80 mix-blend-difference">
+          <ParallaxText className="text-2xl md:text-4xl font-light opacity-80 mix-blend-difference">
             And in that instant, another force awakened: the yearning for order,
             for boundaries, for the illusion of control.The universe's instinct
             to reclaim its scattered chaos and turn disorder into meaning. We
             are taught to fear chaos. To turn away from the very force that gave
             us birth.
-          </p>
+          </ParallaxText>
         </div>
       </section>
       {/* Section 2: The Prison & The Spark */}
@@ -149,19 +154,19 @@ const Story = ({ isReady }) => {
         id="section-2"
         className="min-h-screen flex flex-col items-center justify-center p-8">
         <div className="max-w-4xl text-center space-y-12">
-          <p className="text-3xl md:text-5xl font-bold mix-blend-difference">
+          <ParallaxText className="text-3xl md:text-5xl font-bold mix-blend-difference">
             So is it order that we crave? A perfect shape. Complete. Silent.
             Cold. Flawless symmetry, the triumph of law over frenzy. This, we
             imagine, is the pinnacle of existence.
-          </p>
-          <p className="text-xl md:text-2xl italic opacity-60 mix-blend-difference">
+          </ParallaxText>
+          <ParallaxText className="text-xl md:text-2xl italic opacity-60 mix-blend-difference">
             A world without motion. A world without surprise. A world without
             life.
-          </p>
+          </ParallaxText>
           <div className="h-32"></div>
-          <p className="text-3xl md:text-5xl font-bold text-red-500 mix-blend-difference">
+          <ParallaxText className="text-3xl md:text-5xl font-bold text-red-500 mix-blend-difference">
             But life... life does not arise from stillness.
-          </p>
+          </ParallaxText>
         </div>
       </section>
 
@@ -170,17 +175,17 @@ const Story = ({ isReady }) => {
         id="section-3"
         className="min-h-screen flex flex-col items-center justify-center p-8">
         <div className="max-w-4xl text-center space-y-12">
-          <p className="text-4xl md:text-6xl font-black uppercase tracking-widest mix-blend-difference">
+          <ParallaxText className="text-4xl md:text-6xl font-black uppercase tracking-widest mix-blend-difference">
             It is the chaos inside the order,
-          </p>
-          <p className="text-2xl md:text-3xl mix-blend-difference">
+          </ParallaxText>
+          <ParallaxText className="text-2xl md:text-3xl mix-blend-difference">
             the storm held gently by a boundary,that sparks creation.
-          </p>
+          </ParallaxText>
           <div className="h-32"></div>
-          <p className="text-3xl md:text-5xl font-bold text-orange-500 mix-blend-difference">
-            <br />A swirling, raging fire, held together by the quiet, patient
-            hand of gravity.
-          </p>
+          <ParallaxText className="text-3xl md:text-5xl font-bold text-orange-500 mix-blend-difference">
+            A swirling, raging fire, held together by the quiet, patient hand of
+            gravity.
+          </ParallaxText>
         </div>
       </section>
 
@@ -189,16 +194,18 @@ const Story = ({ isReady }) => {
         id="section-4"
         className="min-h-screen flex flex-col items-center justify-center p-8">
         <div className="max-w-4xl text-center space-y-12">
-          <h2 className="text-6xl md:text-9xl font-bold text-yellow-400 mix-blend-difference">
+          <ParallaxText
+            as="h2"
+            className="text-6xl md:text-9xl font-bold text-yellow-400 mix-blend-difference">
             Chaos gives it fire.
-          </h2>
-          <p className="text-2xl md:text-4xl mix-blend-difference">
+          </ParallaxText>
+          <ParallaxText className="text-2xl md:text-4xl mix-blend-difference">
             Order gives it form.
-          </p>
+          </ParallaxText>
           <div className="h-32"></div>
-          <p className="text-xl md:text-3xl leading-relaxed mix-blend-difference">
+          <ParallaxText className="text-xl md:text-3xl leading-relaxed mix-blend-difference">
             And only together
-          </p>
+          </ParallaxText>
         </div>
       </section>
 
@@ -207,16 +214,18 @@ const Story = ({ isReady }) => {
         id="section-5"
         className="min-h-screen flex flex-col items-center justify-center p-8">
         <div className="max-w-4xl text-center space-y-12">
-          <p className="text-2xl md:text-4xl mix-blend-difference">
+          <ParallaxText className="text-2xl md:text-4xl mix-blend-difference">
             do they give us light.
-          </p>
-          <p className="text-xl md:text-3xl opacity-80 mix-blend-difference">
+          </ParallaxText>
+          <ParallaxText className="text-xl md:text-3xl opacity-80 mix-blend-difference">
             It gives us what neither chaos nor order could ever create alone.
-          </p>
+          </ParallaxText>
           <div className="h-64"></div>
-          <h3 className="text-5xl md:text-8xl font-bold  mix-blend-difference">
+          <ParallaxText
+            as="h3"
+            className="text-5xl md:text-8xl font-bold  mix-blend-difference">
             Michael Truong
-          </h3>
+          </ParallaxText>
         </div>
       </section>
 
