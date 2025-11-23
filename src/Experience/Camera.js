@@ -49,8 +49,8 @@ export default class Camera {
     //     MIDDLE: null,
     //     RIGHT: null,  // Отключает действие для правой кнопки мыши
     // };
-    //
-    // this.controls.enableZoom = false;
+
+    this.controls.enableZoom = false;
   }
 
   resize() {
@@ -78,10 +78,11 @@ export default class Camera {
     );
   }
 
-  animateCameraTo(toProps, duration = 1.5) {
+  animateCameraTo(toProps, duration = 1.5, ease = "power2.out") {
     return gsap.to(this.instance.position, {
       ...toProps,
       duration: duration,
+      ease: ease,
     });
   }
 }

@@ -136,7 +136,11 @@ export default class ParticleSystem {
       uniforms: {
         positions: { type: "t", value: null },
         uPointSize: { type: "f", value: CONFIG.sizes.point },
-        uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
+        uPixelRatio: {
+          value:
+            Math.min(window.devicePixelRatio, 2) *
+            (window.innerWidth < 768 ? 0.5 : 1),
+        },
         uColor: { value: CONFIG.colors.primary },
         uState1: { type: "i", value: 6 }, // Start with Wave (6)
         uState2: { type: "i", value: 6 },
@@ -258,10 +262,9 @@ export default class ParticleSystem {
   resize() {
     if (!this.isReady) return;
     this.FBO.resize(CONFIG.width, CONFIG.height);
-    this.renderShader.uniforms.uPixelRatio.value = Math.min(
-      window.devicePixelRatio,
-      2
-    );
+    this.renderShader.uniforms.uPixelRatio.value =
+      Math.min(window.devicePixelRatio, 2) *
+      (window.innerWidth < 768 ? 0.5 : 1);
   }
 
   update() {

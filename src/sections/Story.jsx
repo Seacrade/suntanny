@@ -1,9 +1,18 @@
 import React, { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import * as THREE from "three";
 import ParallaxText from "../components/ParallaxText";
 
 gsap.registerPlugin(ScrollTrigger);
+
+const Slide = ({ children, className, id }) => (
+  <div
+    id={id}
+    className={`absolute inset-0 flex p-8 md:p-20 opacity-0 pointer-events-none ${className}`}>
+    <div className="max-w-4xl">{children}</div>
+  </div>
+);
 
 const Story = ({ isReady }) => {
   const containerRef = useRef(null);
@@ -17,93 +26,210 @@ const Story = ({ isReady }) => {
 
       const particleSystem = experience.world.page.particleSystem;
       const camera = experience.camera;
+      const cam = camera.instance;
 
-      // Initial State: Emptyness before the big bang (Blue/Purple)
-      console.log(camera.getPosition());
-      particleSystem.setAmplitude(100, 3, "sine.in");
-      particleSystem.setColor("#4b0082", 3, "sine.inOut"); // Indigo/Purple
-      particleSystem.setRotation(true);
-      // Animate smoothly from current position to z: -400
+      // 1. Capture current state from the engine to ensure seamless transition
+      const currentAmplitude =
+        particleSystem.simulationShader.uniforms.amplitude.value;
+      const currentColor =
+        particleSystem.renderShader.uniforms.uColor.value.getHexString();
 
-      camera.animateCameraTo({ z: -400 }, 2.5);
+      // 2. Kill any running animations from the intro (App.jsx) to prevent conflicts
+      gsap.killTweensOf(particleSystem.simulationShader.uniforms.amplitude);
+      gsap.killTweensOf(particleSystem.renderShader.uniforms.uColor.value);
+      gsap.killTweensOf(cam.position);
 
-      // Section 1: The Void & The Command
-      ScrollTrigger.create({
-        trigger: "#section-1",
-        start: "top center",
-        end: "bottom center",
-        scrub: true,
-        onEnter: () => {
-          // Chaos -> Order
-          particleSystem.setAmplitude(30, 3);
-          particleSystem.setColor("#ffffff", 3); // White/Metallic
-        },
-        onLeaveBack: () => {
-          // Back to Chaos
-          particleSystem.setAmplitude(248, 3);
-          particleSystem.setColor("#4b0082", 3);
+      // Master Timeline
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top top",
+          end: "+=6000", // Long scroll distance for smooth pacing
+          scrub: 1,
+          pin: true,
         },
       });
+      console.log("1", particleSystem);
 
-      // Section 2: The Prison & The Spark
-      ScrollTrigger.create({
-        trigger: "#section-2",
-        start: "top center",
-        end: "bottom center",
-        onEnter: () => {
-          // Tremble / Red Glow
-          particleSystem.setAmplitude(5, 0.5); // Slight tremble
-          particleSystem.setColor("#ff0000", 1); // Red glow
-        },
-        onLeaveBack: () => {
-          particleSystem.setAmplitude(0, 1);
-          particleSystem.setColor("#ffffff", 1);
-        },
-      });
+      const updateParticles = () => {
+        if (particleSystem.simulationShader) {
+          particleSystem.simulationShader.uniforms.amplitude.value =
+            particleState.amplitude;
+        }
+        if (particleSystem.renderShader) {
+          const c = new THREE.Color(particleState.color);
+          particleSystem.renderShader.uniforms.uColor.value.copy(c);
+        }
+      };
+      // Helper to animate particles via timeline
+      const particleState = {
+        amplitude: currentAmplitude,
+        color: "#" + currentColor,
+        onUpdate: updateParticles,
+      };
 
-      // Section 3: The Fight & The Ignition
-      ScrollTrigger.create({
-        trigger: "#section-3",
-        start: "top center",
-        end: "bottom center",
-        onEnter: () => {
-          // Explosion -> Chaos (Sun)
-          particleSystem.setAmplitude(248, 0.5); // Explode
-          particleSystem.setColor("#ffaa00", 0.5); // Golden/Fire
-        },
-        onLeaveBack: () => {
-          particleSystem.setAmplitude(5, 1);
-          particleSystem.setColor("#ff0000", 1);
-        },
-      });
+      console.log("particleState", particleState);
+      // Initial Scene
 
-      // Section 4: The Star & The Balance
-      ScrollTrigger.create({
-        trigger: "#section-4",
-        start: "top center",
-        end: "bottom center",
-        onEnter: () => {
-          // Sun (Balance)
-          particleSystem.setAmplitude(48, 2); // Controlled Chaos
-          particleSystem.setColor("#ffdd00", 2); // Bright Sun
+      // --- SCENE 1: The Void (Center) ---
+      tl.to(
+        particleState,
+        {
+          amplitude: 248,
+          color: "#ffffff",
+          onUpdate: updateParticles,
+          duration: 2,
         },
-        onLeaveBack: () => {
-          particleSystem.setAmplitude(248, 2);
-          particleSystem.setColor("#ffaa00", 2);
-        },
-      });
+        "<"
+      )
+        .to("#slide-1", { opacity: 1, duration: 1 })
+        .to(
+          "#slide-1 .word",
+          { opacity: 1, y: 0, stagger: 0.05, duration: 1 },
+          "<"
+        )
+        .to(cam.position, { z: -400, duration: 2, ease: "power1.inOut" }, "<") // Camera Move 1
+        .to("#slide-1", { opacity: 0, duration: 1 }, "+=2") // Hold then fade
+        .to(
+          "#slide-1 .word",
+          { opacity: 0, y: -20, stagger: 0.02, duration: 0.5 },
+          "<"
+        )
 
-      // Section 5: The Gift & Conclusion
-      ScrollTrigger.create({
-        trigger: "#section-5",
-        start: "top center",
-        end: "bottom center",
-        onEnter: () => {
-          // Pulse / Fade
-          particleSystem.setAmplitude(48, 2);
-          // Maybe fade out or zoom camera?
-        },
-      });
+        // --- SCENE 2: Chaos (Top Left) ---
+        // Transition Particles: Chaos -> Explosion
+        .to(
+          particleState,
+          {
+            amplitude: 248,
+            color: "#ffffff",
+            onUpdate: updateParticles,
+            duration: 2,
+          },
+          "<"
+        ) // Overlap with fade out
+        .to(
+          cam.position,
+          { z: -350, x: -20, duration: 2, ease: "power1.inOut" },
+          "<"
+        ) // Camera Move 2
+        .to("#slide-2", { opacity: 1, duration: 1 }, "<+0.5")
+        .to(
+          "#slide-2 .word",
+          { opacity: 1, y: 0, stagger: 0.05, duration: 1 },
+          "<"
+        )
+        .to("#slide-2", { opacity: 0, duration: 1 }, "+=2")
+        .to(
+          "#slide-2 .word",
+          { opacity: 0, y: -20, stagger: 0.02, duration: 0.5 },
+          "<"
+        )
+
+        // --- SCENE 3: Order (Bottom Right) ---
+        // Transition Particles: Explosion -> Tremble (Red)
+        .to(
+          particleState,
+          {
+            amplitude: 5,
+            color: "#ff0000",
+            onUpdate: updateParticles,
+            duration: 2,
+          },
+          "<"
+        )
+        .to(
+          cam.position,
+          { z: -300, x: 20, y: -20, duration: 2, ease: "power1.inOut" },
+          "<"
+        ) // Camera Move 3
+        .to("#slide-3", { opacity: 1, duration: 1 }, "<+0.5")
+        .to(
+          "#slide-3 .word",
+          { opacity: 1, y: 0, stagger: 0.05, duration: 1 },
+          "<"
+        )
+        .to("#slide-3", { opacity: 0, duration: 1 }, "+=2")
+        .to(
+          "#slide-3 .word",
+          { opacity: 0, y: -20, stagger: 0.02, duration: 0.5 },
+          "<"
+        )
+
+        // --- SCENE 4: Chaos inside Order (Center Left) ---
+        // Transition Particles: Tremble -> Fire (Orange)
+        .to(
+          particleState,
+          {
+            amplitude: 100,
+            color: "#ffaa00",
+            onUpdate: updateParticles,
+            duration: 2,
+          },
+          "<"
+        )
+        .to(
+          cam.position,
+          { z: -250, x: -10, y: 10, duration: 2, ease: "power1.inOut" },
+          "<"
+        ) // Camera Move 4
+        .to("#slide-4", { opacity: 1, duration: 1 }, "<+0.5")
+        .to(
+          "#slide-4 .word",
+          { opacity: 1, y: 0, stagger: 0.05, duration: 1 },
+          "<"
+        )
+        .to("#slide-4", { opacity: 0, duration: 1 }, "+=2")
+        .to(
+          "#slide-4 .word",
+          { opacity: 0, y: -20, stagger: 0.02, duration: 0.5 },
+          "<"
+        )
+
+        // --- SCENE 5: Balance (Center Right) ---
+        // Transition Particles: Fire -> Sun (Yellow)
+        .to(
+          particleState,
+          {
+            amplitude: 48,
+            color: "#ffdd00",
+            onUpdate: updateParticles,
+            duration: 2,
+          },
+          "<"
+        )
+        .to(
+          cam.position,
+          { z: -200, x: 0, y: 0, duration: 2, ease: "power1.inOut" },
+          "<"
+        ) // Camera Move 5
+        .to("#slide-5", { opacity: 1, duration: 1 }, "<+0.5")
+        .to(
+          "#slide-5 .word",
+          { opacity: 1, y: 0, stagger: 0.05, duration: 1 },
+          "<"
+        )
+        .to("#slide-5", { opacity: 0, duration: 1 }, "+=2")
+        .to(
+          "#slide-5 .word",
+          { opacity: 0, y: -20, stagger: 0.02, duration: 0.5 },
+          "<"
+        )
+
+        // --- SCENE 6: Conclusion (Center) ---
+        .to(cam.position, { z: -150, duration: 2, ease: "power1.inOut" }, "<") // Camera Move 6
+        .to("#slide-6", { opacity: 1, duration: 1 }, "<+0.5")
+        .to(
+          "#slide-6 .word",
+          { opacity: 1, y: 0, stagger: 0.05, duration: 1 },
+          "<"
+        )
+        .to("#slide-6", { opacity: 0, duration: 1 }, "+=2")
+        .to(
+          "#slide-6 .word",
+          { opacity: 0, y: -20, stagger: 0.02, duration: 0.5 },
+          "<"
+        );
     }, containerRef);
 
     return () => ctx.revert();
@@ -112,126 +238,88 @@ const Story = ({ isReady }) => {
   return (
     <div
       ref={containerRef}
-      className="font-serif relative w-full z-20 pointer-events-auto text-white">
-      {/* Section 1: The Void & The Command */}
-      <section
-        id="section-landing"
-        className="min-h-screen flex flex-col items-center justify-center p-8">
-        <div className="max-w-4xl text-center space-y-12">
-          <ParallaxText className="text-2xl md:text-4xl font-light opacity-90 mix-blend-difference">
-            Before existence knew its own name, the cosmos held its breath in a
-            timeless pause. In the deep silence of the void, the universe
-            trembled, as if gathering the courage to be. A whisper of potential
-            drifting through the dark.
-          </ParallaxText>
-          <div className="h-52"></div> {/* Spacer for timing */}
-          <ParallaxText className="text-2xl md:text-4xl font-light opacity-80 mix-blend-difference">
-            Then in its final moment of peace, the silence shattered.
-          </ParallaxText>
+      className="h-screen w-full relative overflow-hidden font-serif text-white z-20">
+      {/* Slide 1: Center */}
+      <Slide id="slide-1" className="justify-center items-center text-center">
+        <div className="text-3xl md:text-5xl font-light opacity-90 mix-blend-difference leading-relaxed">
+          Before existence knew its own name, the cosmos held its breath in a
+          timeless pause.
         </div>
-      </section>
-      <section
-        id="section-1"
-        className="min-h-screen flex flex-col items-center justify-center p-8">
-        <div className="max-w-4xl text-center space-y-12">
-          <ParallaxText className="text-2xl md:text-4xl font-light opacity-90 mix-blend-difference">
-            The cosmos erupted into absolute CHAOS, taking its first, violent
-            breath of pure fury. The roar of creation was magnificent, a
-            brilliance so violent it humbled the void itself.
-          </ParallaxText>
-          <div className="h-32"></div> {/* Spacer for timing */}
-          <ParallaxText className="text-2xl md:text-4xl font-light opacity-80 mix-blend-difference">
-            And in that instant, another force awakened: the yearning for order,
-            for boundaries, for the illusion of control.The universe's instinct
-            to reclaim its scattered chaos and turn disorder into meaning. We
-            are taught to fear chaos. To turn away from the very force that gave
-            us birth.
-          </ParallaxText>
-        </div>
-      </section>
-      {/* Section 2: The Prison & The Spark */}
-      <section
-        id="section-2"
-        className="min-h-screen flex flex-col items-center justify-center p-8">
-        <div className="max-w-4xl text-center space-y-12">
-          <ParallaxText className="text-3xl md:text-5xl font-bold mix-blend-difference">
-            So is it order that we crave? A perfect shape. Complete. Silent.
-            Cold. Flawless symmetry, the triumph of law over frenzy. This, we
-            imagine, is the pinnacle of existence.
-          </ParallaxText>
-          <ParallaxText className="text-xl md:text-2xl italic opacity-60 mix-blend-difference">
-            A world without motion. A world without surprise. A world without
-            life.
-          </ParallaxText>
-          <div className="h-32"></div>
-          <ParallaxText className="text-3xl md:text-5xl font-bold text-red-500 mix-blend-difference">
-            But life... life does not arise from stillness.
-          </ParallaxText>
-        </div>
-      </section>
+        <br />
+        <ParallaxText className="opacity-60 text-2xl md:text-4xl">
+          A whisper of potential drifting through the dark.
+        </ParallaxText>
+      </Slide>
 
-      {/* Section 3: The Fight & The Ignition */}
-      <section
-        id="section-3"
-        className="min-h-screen flex flex-col items-center justify-center p-8">
-        <div className="max-w-4xl text-center space-y-12">
-          <ParallaxText className="text-4xl md:text-6xl font-black uppercase tracking-widest mix-blend-difference">
-            It is the chaos inside the order,
-          </ParallaxText>
-          <ParallaxText className="text-2xl md:text-3xl mix-blend-difference">
-            the storm held gently by a boundary,that sparks creation.
-          </ParallaxText>
-          <div className="h-32"></div>
-          <ParallaxText className="text-3xl md:text-5xl font-bold text-orange-500 mix-blend-difference">
-            A swirling, raging fire, held together by the quiet, patient hand of
-            gravity.
-          </ParallaxText>
+      {/* Slide 2: Top Left */}
+      <Slide id="slide-2" className="justify-start items-start text-left pt-32">
+        <div className="text-4xl md:text-6xl font-bold mix-blend-difference leading-tight">
+          The cosmos erupted into absolute
         </div>
-      </section>
+        <ParallaxText className="text-6xl md:text-8xl italic">
+          CHAOS.
+        </ParallaxText>
+        <ParallaxText className="mt-8 text-xl md:text-2xl opacity-80 max-w-xl">
+          Taking its first, violent breath of pure fury. The roar of creation
+          was magnificent.
+        </ParallaxText>
+      </Slide>
 
-      {/* Section 4: The Star & The Balance */}
-      <section
-        id="section-4"
-        className="min-h-screen flex flex-col items-center justify-center p-8">
-        <div className="max-w-4xl text-center space-y-12">
-          <ParallaxText
-            as="h2"
-            className="text-6xl md:text-9xl font-bold text-yellow-400 mix-blend-difference">
-            Chaos gives it fire.
-          </ParallaxText>
-          <ParallaxText className="text-2xl md:text-4xl mix-blend-difference">
-            Order gives it form.
-          </ParallaxText>
-          <div className="h-32"></div>
-          <ParallaxText className="text-xl md:text-3xl leading-relaxed mix-blend-difference">
-            And only together
-          </ParallaxText>
+      {/* Slide 3: Bottom Right */}
+      <Slide
+        id="slide-3"
+        className="justify-end items-end text-right pb-32 pr-12">
+        <div className="text-3xl md:text-5xl font-bold mix-blend-difference text-red-500">
+          Is it order that we crave?
         </div>
-      </section>
+        <ParallaxText className="mt-4 text-xl md:text-3xl italic opacity-60">
+          A perfect shape. Complete. Silent. Cold.
+        </ParallaxText>
+        <ParallaxText className="text-xl md:text-3xl italic opacity-60">
+          A world without life.
+        </ParallaxText>
+      </Slide>
 
-      {/* Section 5: The Gift & Conclusion */}
-      <section
-        id="section-5"
-        className="min-h-screen flex flex-col items-center justify-center p-8">
-        <div className="max-w-4xl text-center space-y-12">
-          <ParallaxText className="text-2xl md:text-4xl mix-blend-difference">
-            do they give us light.
-          </ParallaxText>
-          <ParallaxText className="text-xl md:text-3xl opacity-80 mix-blend-difference">
-            It gives us what neither chaos nor order could ever create alone.
-          </ParallaxText>
-          <div className="h-64"></div>
-          <ParallaxText
-            as="h3"
-            className="text-5xl md:text-8xl font-bold  mix-blend-difference">
-            Michael Truong
-          </ParallaxText>
+      {/* Slide 4: Center Left */}
+      <Slide
+        id="slide-4"
+        className="justify-start items-center text-left pl-12">
+        <div className="text-4xl md:text-7xl font-black uppercase tracking-widest mix-blend-difference text-orange-500">
+          Chaos inside the order.
         </div>
-      </section>
+        <ParallaxText className="mt-6 text-2xl md:text-4xl mix-blend-difference max-w-lg">
+          The storm held gently by a boundary, that sparks creation.
+        </ParallaxText>
+      </Slide>
 
-      <section className="h-[50vh]"></section>
+      {/* Slide 5: Center Right */}
+      <Slide id="slide-5" className="justify-end items-center text-right pr-12">
+        <div
+          as="h2"
+          className="text-5xl md:text-8xl font-bold text-yellow-400 mix-blend-difference">
+          Chaos gives it fire.
+        </div>
+        <ParallaxText className="text-3xl md:text-5xl mix-blend-difference mt-4">
+          Order gives it form.
+        </ParallaxText>
+      </Slide>
+
+      {/* Slide 6: Center */}
+      <Slide id="slide-6" className="justify-center items-center text-center">
+        <ParallaxText className="text-2xl md:text-4xl mix-blend-difference mb-12">
+          And only together do they give us.
+        </ParallaxText>
+        <div
+          as="h3"
+          className="text-6xl md:text-9xl font-bold mix-blend-difference">
+          light
+        </div>
+      </Slide>
     </div>
   );
 };
-
+// particleSystem.setAmplitude(120, 2, "sine.inOut");
+// particleSystem.setColor("#ffffff", 2, "sine.inOut");
+// particleSystem.setRotation(true);
+// camera.animateCameraTo({ position: new THREE.Vector3(0, 0, -600) }, 2, "sine.inOut");
 export default Story;

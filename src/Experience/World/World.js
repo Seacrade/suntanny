@@ -60,14 +60,14 @@ export default class World {
       // //}, { once: true });
     });
   }
-
+  // Intro animation of splash screen
   animationPipeline() {
     // if ( this.text )
     //     this.text.animateTextShow()
     this.camera.animateCamera(
       2.5, // duration
       { z: -3500, x: 100, y: 150 }, // fromProps (start z at -3500)
-      { x: -100, y: -100, z: -100, ease: "power4.out" } // toProps (end z at -400 with an ease)
+      { x: -111, y: -111, z: -150, ease: "power4.out" } // toProps (end z at -600 to match Story start)
     );
     //if (this.camera) this.camera.animateCameraPosition();
   }

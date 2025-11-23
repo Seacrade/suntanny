@@ -1,8 +1,4 @@
 import React, { useLayoutEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const ParallaxText = ({ as: Tag = "p", children, className, ...props }) => {
   const textRef = useRef(null);
@@ -11,49 +7,30 @@ const ParallaxText = ({ as: Tag = "p", children, className, ...props }) => {
     const element = textRef.current;
     if (!element) return;
 
-    const ctx = gsap.context(() => {
-      // Get the text content
-      const text = element.innerText;
-      // Split into words
-      const words = text.split(/\s+/).filter((w) => w.length > 0);
+    // Simple check to avoid double-splitting if re-renders happen
+    if (element.dataset.split) return;
 
-      // Clear content
-      element.innerHTML = "";
+    // Handle mixed content (text + spans) by just processing textContent for now
+    // Ideally we'd traverse nodes, but for this specific use case, we can simplify
+    // or expect the user to pass plain text to this component.
 
-      // Create spans for each word
-      words.forEach((word) => {
-        const span = document.createElement("span");
-        span.textContent = word + "\u00A0"; // Add non-breaking space
-        span.style.display = "inline-block";
-        span.style.willChange = "transform, opacity";
-        element.appendChild(span);
-      });
+    // If children is a string, we can split it safely.
+    // If it's complex, we might break structure.
+    // Let's assume for now we are wrapping leaf text blocks.
 
-      const spans = element.querySelectorAll("span");
+    const text = element.innerText;
+    const words = text.split(/\s+/).filter((w) => w.length > 0);
 
-      gsap.fromTo(
-        spans,
-        {
-          y: 100,
-          opacity: 0,
-        },
-        {
-          y: 0,
-          opacity: 1,
-          stagger: 0.05,
-          duration: 1,
-          ease: "power4.out",
-          scrollTrigger: {
-            trigger: element,
-            start: "top bottom-=10%",
-            end: "bottom center+=10%",
-            scrub: 1,
-          },
-        }
-      );
-    }, textRef);
+    element.innerHTML = "";
+    words.forEach((word) => {
+      const span = document.createElement("span");
+      span.textContent = word + "\u00A0";
+      span.className =
+        "word inline-block opacity-0 translate-y-8 will-change-transform";
+      element.appendChild(span);
+    });
 
-    return () => ctx.revert();
+    element.dataset.split = "true";
   }, [children]);
 
   return (
