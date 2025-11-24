@@ -44,6 +44,18 @@ export default class Camera {
     this.controls.enabled = true;
     this.controls.target = new THREE.Vector3(0, 0, 0);
 
+    this.controls.addEventListener("change", () => {
+      const pos = this.instance.position;
+      const target = this.controls.target;
+      console.log(
+        `Position: { x: ${Math.round(pos.x)}, y: ${Math.round(
+          pos.y
+        )}, z: ${Math.round(pos.z)} } | Target: { x: ${Math.round(
+          target.x
+        )}, y: ${Math.round(target.y)}, z: ${Math.round(target.z)} }`
+      );
+    });
+
     // this.controls.mouseButtons = {
     //     LEFT: THREE.MOUSE.ROTATE,
     //     MIDDLE: null,

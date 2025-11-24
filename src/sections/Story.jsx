@@ -2,7 +2,6 @@ import React, { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import * as THREE from "three";
-import ParallaxText from "../components/ParallaxText";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -27,6 +26,7 @@ const Story = ({ isReady }) => {
       const particleSystem = experience.world.page.particleSystem;
       const camera = experience.camera;
       const cam = camera.instance;
+      const controls = camera.controls;
 
       // 1. Capture current state from the engine to ensure seamless transition
       const currentAmplitude =
@@ -38,18 +38,22 @@ const Story = ({ isReady }) => {
       gsap.killTweensOf(particleSystem.simulationShader.uniforms.amplitude);
       gsap.killTweensOf(particleSystem.renderShader.uniforms.uColor.value);
       gsap.killTweensOf(cam.position);
+      gsap.killTweensOf(controls.target);
 
       // Master Timeline
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top top",
-          end: "+=6000", // Long scroll distance for smooth pacing
+          end: "+=9999", // Long scroll distance for smooth pacing
           scrub: 1,
           pin: true,
         },
       });
-      console.log("1", particleSystem);
+
+      // Ensure target starts at center
+      tl.set(controls.target, { x: 0, y: 0, z: 0 });
+      //console.log("1", particleSystem);
 
       const updateParticles = () => {
         if (particleSystem.simulationShader) {
@@ -68,33 +72,58 @@ const Story = ({ isReady }) => {
         onUpdate: updateParticles,
       };
 
-      console.log("particleState", particleState);
+      // 0. Initial Intro Animation (Auto-play)
+      gsap.to(".intro-element", {
+        opacity: 0.8,
+        y: 0,
+        duration: 1.5,
+        stagger: 2,
+        ease: "power3.out",
+        delay: 0.5,
+      });
+
       // Initial Scene
+
+      // --- SCENE 0: Fade Out Intro ---
+      // We use fromTo so it always starts at opacity 1 when at the top
+      tl.fromTo(
+        "#intro-slide",
+        { opacity: 1, y: 0, pointerEvents: "auto" },
+        {
+          opacity: 0,
+          y: -50,
+          pointerEvents: "none",
+          duration: 3,
+          ease: "power2.inOut",
+        },
+        0
+      );
 
       // --- SCENE 1: The Void (Center) ---
       tl.to(
         particleState,
         {
-          amplitude: 248,
-          color: "#ffffff",
+          amplitude: 30,
+          color: "#000000",
           onUpdate: updateParticles,
-          duration: 2,
+          duration: 4,
         },
         "<"
       )
         .to("#slide-1", { opacity: 1, duration: 1 })
         .to(
-          "#slide-1 .word",
-          { opacity: 1, y: 0, stagger: 0.05, duration: 1 },
+          cam.position,
+          { y: 10, z: -8000, duration: 4, ease: "power1.inOut" },
           "<"
-        )
-        .to(cam.position, { z: -400, duration: 2, ease: "power1.inOut" }, "<") // Camera Move 1
-        .to("#slide-1", { opacity: 0, duration: 1 }, "+=2") // Hold then fade
+        ) // Camera Move 1
         .to(
-          "#slide-1 .word",
-          { opacity: 0, y: -20, stagger: 0.02, duration: 0.5 },
+          controls.target,
+          { x: 0, y: 0, z: 0, duration: 4, ease: "power1.inOut" },
           "<"
         )
+        .to(".slide-1-text-1", { opacity: 1, y: 0, duration: 1 }, "<")
+        .to(".slide-1-text-2", { opacity: 1, y: 0, duration: 1 }, "+=1")
+        .to("#slide-1", { opacity: 0, duration: 1 }, "+=2") // Hold then fade
 
         // --- SCENE 2: Chaos (Top Left) ---
         // Transition Particles: Chaos -> Explosion
@@ -104,30 +133,52 @@ const Story = ({ isReady }) => {
             amplitude: 248,
             color: "#ffffff",
             onUpdate: updateParticles,
-            duration: 2,
+            duration: 7,
           },
           "<"
         ) // Overlap with fade out
+
+        // Move 1: Focus Top Left (Text 1 & 2)
         .to(
           cam.position,
           { z: -350, x: -20, duration: 2, ease: "power1.inOut" },
           "<"
-        ) // Camera Move 2
-        .to("#slide-2", { opacity: 1, duration: 1 }, "<+0.5")
+        )
         .to(
-          "#slide-2 .word",
-          { opacity: 1, y: 0, stagger: 0.05, duration: 1 },
+          controls.target,
+          { x: 0, y: 0, z: 0, duration: 2, ease: "power1.inOut" },
           "<"
         )
-        .to("#slide-2", { opacity: 0, duration: 1 }, "+=2")
-        .to(
-          "#slide-2 .word",
-          { opacity: 0, y: -20, stagger: 0.02, duration: 0.5 },
-          "<"
-        )
+        .to("#slide-2", { opacity: 1, duration: 1 }, "<")
+        .to(".slide-2-text-1", { opacity: 1, duration: 1 }, "<")
+        .to(".slide-2-text-2", { opacity: 1, duration: 1 }, "+=0.5")
 
-        // --- SCENE 3: Order (Bottom Right) ---
-        // Transition Particles: Explosion -> Tremble (Red)
+        // Move 2: Focus Right (Text 3) - Pan Left
+        .to(cam.position, { x: -50, duration: 2.5, ease: "power1.inOut" }, "<")
+        .to(
+          controls.target,
+          { x: 0, y: 0, z: 0, duration: 2.5, ease: "power1.inOut" },
+          "<"
+        )
+        .to(".slide-2-text-3", { opacity: 1, duration: 1 }, "<+0.5")
+
+        // Move 3: Focus Left (Text 4) - Pan Right
+        .to(
+          cam.position,
+          { x: 20, y: 20, duration: 2.5, ease: "power1.inOut" },
+          "<+1"
+        )
+        .to(
+          controls.target,
+          { x: 0, y: 0, z: 0, duration: 2.5, ease: "power1.inOut" },
+          "<"
+        )
+        .to(".slide-2-text-4", { opacity: 1, duration: 1 }, "<+0.5")
+
+        .to("#slide-2", { opacity: 0, duration: 1 }, "+=2")
+
+        // --- SCENE 3: The Yearning for Order (Red Sequence) ---
+        // 3.1: Awakening of Order
         .to(
           particleState,
           {
@@ -140,28 +191,73 @@ const Story = ({ isReady }) => {
         )
         .to(
           cam.position,
-          { z: -300, x: 20, y: -20, duration: 2, ease: "power1.inOut" },
+          { x: -170, y: -105, z: 0, duration: 2, ease: "power1.inOut" },
           "<"
-        ) // Camera Move 3
+        )
+        .to(controls.target, {
+          x: -170,
+          y: -105,
+          z: 0,
+          duration: 2,
+          ease: "power1.inOut",
+        })
         .to("#slide-3", { opacity: 1, duration: 1 }, "<+0.5")
-        .to(
-          "#slide-3 .word",
-          { opacity: 1, y: 0, stagger: 0.05, duration: 1 },
-          "<"
-        )
-        .to("#slide-3", { opacity: 0, duration: 1 }, "+=2")
-        .to(
-          "#slide-3 .word",
-          { opacity: 0, y: -20, stagger: 0.02, duration: 0.5 },
-          "<"
-        )
+        .to(".slide-3-text-1", { opacity: 1, duration: 1 }, "<")
+        .to(".slide-3-text-1", { opacity: 0, duration: 1 }, "+=3")
 
-        // --- SCENE 4: Chaos inside Order (Center Left) ---
-        // Transition Particles: Tremble -> Fire (Orange)
+        // 3.2: Fear of Chaos
+        .to(
+          cam.position,
+          { z: -200, x: -9, y: 4, duration: 3, ease: "power1.inOut" },
+          "<"
+        )
+        .to(
+          controls.target,
+          { x: 0, y: 0, z: 0, duration: 3, ease: "power1.inOut" },
+          "<"
+        )
+        .to(".slide-3-text-2", { opacity: 1, duration: 1 }, "<+0.5")
+        .to(".slide-3-text-2", { opacity: 0, duration: 1 }, "+=3")
+
+        // 3.3: Perfect Shape (Static)
+        .to(
+          particleState,
+          { amplitude: 1, onUpdate: updateParticles, duration: 2 },
+          "<"
+        )
+        .to(
+          cam.position,
+          { z: -260, x: 0, y: -40, duration: 3, ease: "power1.inOut" },
+          "<"
+        )
+        .to(
+          controls.target,
+          { x: 0, y: 0, z: 0, duration: 3, ease: "power1.inOut" },
+          "<"
+        )
+        .to(".slide-3-text-3", { opacity: 1, duration: 1 }, "<+0.5")
+        .to(".slide-3-text-3", { opacity: 0, duration: 1 }, "+=3")
+
+        // 3.4: A World Without Life
+        .to(
+          cam.position,
+          { z: -240, x: 0, y: 0, duration: 3, ease: "power1.inOut" },
+          "<"
+        )
+        .to(
+          controls.target,
+          { x: 0, y: 0, z: 0, duration: 3, ease: "power1.inOut" },
+          "<"
+        )
+        .to(".slide-3-text-4", { opacity: 1, duration: 1 }, "<+0.5")
+        .to(".slide-3-text-4", { opacity: 0, duration: 1 }, "+=3")
+
+        // --- SCENE 4: Life Arises (Orange Sequence) ---
+        // 4.1: Chaos Inside Order
         .to(
           particleState,
           {
-            amplitude: 100,
+            amplitude: 80,
             color: "#ffaa00",
             onUpdate: updateParticles,
             duration: 2,
@@ -170,28 +266,37 @@ const Story = ({ isReady }) => {
         )
         .to(
           cam.position,
-          { z: -250, x: -10, y: 10, duration: 2, ease: "power1.inOut" },
-          "<"
-        ) // Camera Move 4
-        .to("#slide-4", { opacity: 1, duration: 1 }, "<+0.5")
-        .to(
-          "#slide-4 .word",
-          { opacity: 1, y: 0, stagger: 0.05, duration: 1 },
+          { z: -220, x: -60, y: 0, duration: 3, ease: "power1.inOut" },
           "<"
         )
-        .to("#slide-4", { opacity: 0, duration: 1 }, "+=2")
         .to(
-          "#slide-4 .word",
-          { opacity: 0, y: -20, stagger: 0.02, duration: 0.5 },
+          controls.target,
+          { x: 0, y: 0, z: 0, duration: 3, ease: "power1.inOut" },
           "<"
         )
+        .to(".slide-3-text-5", { opacity: 1, duration: 1 }, "<+0.5")
+        .to(".slide-3-text-5", { opacity: 0, duration: 1 }, "+=3")
 
-        // --- SCENE 5: Balance (Center Right) ---
-        // Transition Particles: Fire -> Sun (Yellow)
+        // 4.2: Gravity's Hand
+        .to(
+          cam.position,
+          { z: -200, x: 60, y: 0, duration: 3, ease: "power1.inOut" },
+          "<"
+        )
+        .to(
+          controls.target,
+          { x: 0, y: 0, z: 0, duration: 3, ease: "power1.inOut" },
+          "<"
+        )
+        .to(".slide-3-text-6", { opacity: 1, duration: 1 }, "<+0.5")
+        .to(".slide-3-text-6", { opacity: 0, duration: 1 }, "+=3")
+
+        // --- SCENE 5: Balance (Yellow Sequence) ---
+        // 5.1: Fire and Form
         .to(
           particleState,
           {
-            amplitude: 48,
+            amplitude: 40,
             color: "#ffdd00",
             onUpdate: updateParticles,
             duration: 2,
@@ -200,36 +305,42 @@ const Story = ({ isReady }) => {
         )
         .to(
           cam.position,
-          { z: -200, x: 0, y: 0, duration: 2, ease: "power1.inOut" },
-          "<"
-        ) // Camera Move 5
-        .to("#slide-5", { opacity: 1, duration: 1 }, "<+0.5")
-        .to(
-          "#slide-5 .word",
-          { opacity: 1, y: 0, stagger: 0.05, duration: 1 },
+          { z: -180, x: 0, y: 50, duration: 3, ease: "power1.inOut" },
           "<"
         )
-        .to("#slide-5", { opacity: 0, duration: 1 }, "+=2")
         .to(
-          "#slide-5 .word",
-          { opacity: 0, y: -20, stagger: 0.02, duration: 0.5 },
+          controls.target,
+          { x: 0, y: 0, z: 0, duration: 3, ease: "power1.inOut" },
           "<"
         )
+        .to(".slide-3-text-7", { opacity: 1, duration: 1 }, "<+0.5")
+        .to(".slide-3-text-7", { opacity: 0, duration: 1 }, "+=3")
 
-        // --- SCENE 6: Conclusion (Center) ---
-        .to(cam.position, { z: -150, duration: 2, ease: "power1.inOut" }, "<") // Camera Move 6
-        .to("#slide-6", { opacity: 1, duration: 1 }, "<+0.5")
+        // --- SCENE 6: Light (White Sequence) ---
+        // 6.1: Light
         .to(
-          "#slide-6 .word",
-          { opacity: 1, y: 0, stagger: 0.05, duration: 1 },
+          particleState,
+          {
+            amplitude: 50,
+            color: "#ffffff",
+            onUpdate: updateParticles,
+            duration: 2,
+          },
           "<"
         )
-        .to("#slide-6", { opacity: 0, duration: 1 }, "+=2")
         .to(
-          "#slide-6 .word",
-          { opacity: 0, y: -20, stagger: 0.02, duration: 0.5 },
+          cam.position,
+          { z: -150, x: 0, y: 0, duration: 3, ease: "power1.inOut" },
           "<"
-        );
+        )
+        .to(
+          controls.target,
+          { x: 0, y: 0, z: 0, duration: 3, ease: "power1.inOut" },
+          "<"
+        )
+        .to(".slide-3-text-8", { opacity: 1, duration: 1 }, "<+0.5")
+        .to(".slide-3-text-8", { opacity: 0, duration: 1 }, "+=3")
+        .to("#slide-3", { opacity: 0, duration: 1 }, "<"); // Fade out container at end
     }, containerRef);
 
     return () => ctx.revert();
@@ -239,80 +350,162 @@ const Story = ({ isReady }) => {
     <div
       ref={containerRef}
       className="h-screen w-full relative overflow-hidden font-serif text-white z-20">
+      {/* Intro Slide: Auto Fade In */}
+      <div
+        id="intro-slide"
+        className="absolute inset-0 flex flex-col justify-center items-center text-align z-30 pointer-events-none">
+        {/* --- Centered Group (top + bottom with space between) --- */}
+        <div className="flex flex-col items-center space-y-6 transform translate-y-6 max-w-2xl">
+          {/* Top line */}
+          <p className="text-center text-2xl md:text-4xl opacity-0 translate-y-10 intro-element">
+            Before existence knew its own name the cosmos held its breath in a
+            timeless pause
+          </p>
+          <br />
+          {/* Bottom paragraph */}
+          <p className="text-center text-2xl md:text-4xl opacity-0 translate-y-10 intro-element">
+            In the deep silence of the void, the universe trembled, as if
+            gathering the courage to be.
+          </p>
+        </div>
+
+        {/* --- Scroll Cue --- */}
+        <div className="absolute bottom-12 flex flex-col items-center pointer-events-none opacity-0 intro-element">
+          <span className="text-[10px] uppercase tracking-[0.3em] text-white/40 mb-4">
+            Scroll to Explore
+          </span>
+          <div className="w-px h-16 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-full bg-white/80 animate-scroll-line"></div>
+          </div>
+        </div>
+      </div>
+
       {/* Slide 1: Center */}
       <Slide id="slide-1" className="justify-center items-center text-center">
-        <div className="text-3xl md:text-5xl font-light opacity-90 mix-blend-difference leading-relaxed">
-          Before existence knew its own name, the cosmos held its breath in a
-          timeless pause.
+        <div className="flex flex-col gap-16">
+          <div className="text-center text-2xl md:text-4xl opacity-0 slide-1-text-1">
+            Then in its final moment of peace,
+          </div>
+          <div className="text-2xl md:text-4xl opacity-0 slide-1-text-2">
+            the silence shattered.
+          </div>
         </div>
-        <br />
-        <ParallaxText className="opacity-60 text-2xl md:text-4xl">
-          A whisper of potential drifting through the dark.
-        </ParallaxText>
       </Slide>
-
       {/* Slide 2: Top Left */}
-      <Slide id="slide-2" className="justify-start items-start text-left pt-32">
-        <div className="text-4xl md:text-6xl font-bold mix-blend-difference leading-tight">
+      <Slide id="slide-2" className="justify-start items-start pt-32 md:pt-48">
+        <div className="text-xl md:text-3xl mix-blend-difference leading-tight opacity-0 slide-2-text-1">
           The cosmos erupted into absolute
         </div>
-        <ParallaxText className="text-6xl md:text-8xl italic">
+        <div className="text-6xl md:text-5xl italic font-bold mix-blend-difference mt-4 opacity-0 slide-2-text-2">
           CHAOS.
-        </ParallaxText>
-        <ParallaxText className="mt-8 text-xl md:text-2xl opacity-80 max-w-xl">
-          Taking its first, violent breath of pure fury. The roar of creation
-          was magnificent.
-        </ParallaxText>
-      </Slide>
-
-      {/* Slide 3: Bottom Right */}
-      <Slide
-        id="slide-3"
-        className="justify-end items-end text-right pb-32 pr-12">
-        <div className="text-3xl md:text-5xl font-bold mix-blend-difference text-red-500">
-          Is it order that we crave?
         </div>
-        <ParallaxText className="mt-4 text-xl md:text-3xl italic opacity-60">
-          A perfect shape. Complete. Silent. Cold.
-        </ParallaxText>
-        <ParallaxText className="text-xl md:text-3xl italic opacity-60">
-          A world without life.
-        </ParallaxText>
-      </Slide>
-
-      {/* Slide 4: Center Left */}
-      <Slide
-        id="slide-4"
-        className="justify-start items-center text-left pl-12">
-        <div className="text-4xl md:text-7xl font-black uppercase tracking-widest mix-blend-difference text-orange-500">
-          Chaos inside the order.
+        <div className="absolute top-1/2 right-12 md:right-1/4 transform -translate-y-1/2 text-right text-xl md:text-3xl max-w-2xl mix-blend-difference opacity-0 slide-2-text-3">
+          The roar of creation was magnificent, a brilliance so violent it
+          humbled the void itself.
         </div>
-        <ParallaxText className="mt-6 text-2xl md:text-4xl mix-blend-difference max-w-lg">
-          The storm held gently by a boundary, that sparks creation.
-        </ParallaxText>
-      </Slide>
-
-      {/* Slide 5: Center Right */}
-      <Slide id="slide-5" className="justify-end items-center text-right pr-12">
-        <div
-          as="h2"
-          className="text-5xl md:text-8xl font-bold text-yellow-400 mix-blend-difference">
-          Chaos gives it fire.
+        <div className="absolute bottom-24 left-12 md:bottom-40 md:left-1/4 text-left text-xl md:text-3xl max-w-2xl mix-blend-difference opacity-0 slide-2-text-4 z-50">
+          And in that instant, another force awakened
         </div>
-        <ParallaxText className="text-3xl md:text-5xl mix-blend-difference mt-4">
-          Order gives it form.
-        </ParallaxText>
       </Slide>
+      {/* Slide 3: Combined Sequence */}
+      <Slide id="slide-3" className="pointer-events-none">
+        {/* 3.1: Awakening of Order (Right) */}
+        <div className="absolute inset-0 flex justify-end items-center pr-12 md:pr-24 opacity-0 slide-3-text-1">
+          <div className="text-right max-w-xl">
+            <div className="text-3xl md:text-5xl font-bold mix-blend-difference text-red-500">
+              And in that instant, another force awakened:
+            </div>
+            <div className="mt-4 text-xl md:text-2xl italic opacity-80">
+              the yearning for order, for boundaries, for the illusion of
+              control. The universe's instinct to reclaim its scattered chaos
+              and turn disorder into meaning.
+            </div>
+          </div>
+        </div>
 
-      {/* Slide 6: Center */}
-      <Slide id="slide-6" className="justify-center items-center text-center">
-        <ParallaxText className="text-2xl md:text-4xl mix-blend-difference mb-12">
-          And only together do they give us.
-        </ParallaxText>
-        <div
-          as="h3"
-          className="text-6xl md:text-9xl font-bold mix-blend-difference">
-          light
+        {/* 3.2: Fear of Chaos (Left) */}
+        <div className="absolute inset-0 flex justify-start items-center pl-12 md:pl-24 opacity-0 slide-3-text-2">
+          <div className="text-left max-w-xl">
+            <div className="text-3xl md:text-5xl font-bold mix-blend-difference text-red-400">
+              We are taught to fear chaos.
+            </div>
+            <div className="mt-4 text-xl md:text-2xl italic opacity-80">
+              To turn away from the very force that gave us birth.
+            </div>
+          </div>
+        </div>
+
+        {/* 3.3: Perfect Shape (Top) */}
+        <div className="absolute inset-0 flex justify-center items-start pt-32 opacity-0 slide-3-text-3">
+          <div className="text-center max-w-2xl">
+            <div className="text-3xl md:text-5xl font-bold mix-blend-difference text-red-300">
+              So is it order that we crave?
+            </div>
+            <div className="mt-4 text-xl md:text-2xl italic opacity-80">
+              A perfect shape. Complete. Silent. Cold. Flawless symmetry, the
+              triumph of law over frenzy.
+            </div>
+          </div>
+        </div>
+
+        {/* 3.4: A World Without Life (Bottom) */}
+        <div className="absolute inset-0 flex justify-center items-end pb-32 opacity-0 slide-3-text-4">
+          <div className="text-center max-w-2xl">
+            <div className="text-3xl md:text-5xl font-bold mix-blend-difference text-red-200">
+              This, we imagine, is the pinnacle of existence.
+            </div>
+            <div className="mt-4 text-xl md:text-2xl italic opacity-80">
+              A world without motion. A world without surprise. A world without
+              life.
+            </div>
+          </div>
+        </div>
+
+        {/* 4.1: Chaos Inside Order (Right) */}
+        <div className="absolute inset-0 flex justify-end items-center pr-12 md:pr-24 opacity-0 slide-3-text-5">
+          <div className="text-right max-w-xl">
+            <div className="text-4xl md:text-6xl font-black uppercase tracking-widest mix-blend-difference text-orange-500">
+              But life...
+            </div>
+            <div className="mt-6 text-xl md:text-3xl mix-blend-difference">
+              life does not arise from stillness. It is the chaos inside the
+              order, the storm held gently by a boundary, that sparks creation.
+            </div>
+          </div>
+        </div>
+
+        {/* 4.2: Gravity's Hand (Left) */}
+        <div className="absolute inset-0 flex justify-start items-center pl-12 md:pl-24 opacity-0 slide-3-text-6">
+          <div className="text-left max-w-xl">
+            <div className="text-2xl md:text-4xl mix-blend-difference">
+              A swirling, raging fire, held together by the quiet, patient hand
+              of gravity.
+            </div>
+          </div>
+        </div>
+
+        {/* 5.1: Fire and Form (Top) */}
+        <div className="absolute inset-0 flex justify-center items-start pt-32 opacity-0 slide-3-text-7">
+          <div className="text-center">
+            <div className="text-5xl md:text-8xl font-bold text-yellow-400 mix-blend-difference">
+              Chaos gives it fire.
+            </div>
+            <div className="text-3xl md:text-5xl mix-blend-difference mt-4">
+              Order gives it form.
+            </div>
+          </div>
+        </div>
+
+        {/* 6.1: Light (Center) */}
+        <div className="absolute inset-0 flex justify-center items-center opacity-0 slide-3-text-8">
+          <div className="text-center max-w-3xl">
+            <div className="text-2xl md:text-4xl mix-blend-difference mb-8">
+              And only together do they give us light.
+            </div>
+            <div className="text-xl md:text-3xl italic opacity-80">
+              It gives us what neither chaos nor order could ever create alone.
+            </div>
+          </div>
         </div>
       </Slide>
     </div>

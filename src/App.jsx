@@ -46,12 +46,12 @@ const App = () => {
       particleSystem.morph(0, 3, "sine.inOut");
 
       // Animate to Story start state
-      particleSystem.setAmplitude(1000, 2, "sine.inOut");
-      particleSystem.setColor("#ffffff", 2, "sine.inOut");
+      particleSystem.setAmplitude(1, 2, "sine.inOut");
+      particleSystem.setColor("#000000", 0.2, "sine.inOut");
       particleSystem.setRotation(true);
 
       // Move camera to Story start position
-      camera.animateCameraTo({ x: 0, y: 0, z: -6000 }, 3, "power2.inOut");
+      camera.animateCameraTo({ x: 50, y: 50, z: -100 }, 2, "power2.inOut");
     }
 
     // Animate Splash Out
@@ -85,8 +85,8 @@ const App = () => {
 
       {storyStarted && (
         <>
-          {/* <Navbar />
-          <Dropdown /> */}
+          <Navbar />
+          <Dropdown />
           <Story isReady={isReady} />
         </>
       )}
