@@ -163,16 +163,39 @@ const Story = ({ isReady, onStoryEnd }) => {
           },
           ">2"
         )
-        .to(cam.position, { z: -150 * dFactor, duration: 4, ease: "power1.inOut" }, ">")
-
+        .to(
+          cam.position,
+          {
+            x: 50 * dFactor,
+            y: -100 * dFactor,
+            z: -150 * dFactor,
+            duration: 2,
+            ease: "sine.inOut",
+          },
+          "<"
+        )
         // Move 2: Focus Right (Text 3) - Pan Left
-        .to(".slide-2-text-3", { opacity: 1, duration: 4 }, "+=1") //5
-        .to(".slide-2-text-4", { opacity: 1, duration: 4 }, "+=1") //7
+        .to(".slide-2-text-3", { opacity: 1, duration: 2 }, "+=1") //5
+        .to(cam.position, { z: -150 * dFactor, duration: 2, ease: "power1.inOut" }, ">")
 
-        .to("#slide-2", { opacity: 0, duration: 4 }, "+=2")
+        .to(".slide-2-text-4", { opacity: 1, duration: 2 }, "+=4") //7
+        .to(
+          cam.position,
+          {
+            x: 100 * dFactor,
+            y: -150 * dFactor,
+            z: -150 * dFactor,
+            duration: 2,
+            ease: "sine.inOut",
+          },
+          "<"
+        )
+        .to("#slide-2", { opacity: 0, duration: 2 }, "+=4")
 
         // --- SCENE 3: The Yearning for Order (Red Sequence) ---
         // 3.0: Another Force Awakened
+        .call(() => particleSystem.setRotation(true), null, "<") // Enable rotation
+
         .to(
           particleState,
           {
@@ -273,6 +296,8 @@ const Story = ({ isReady, onStoryEnd }) => {
           },
           "<"
         )
+        .call(() => particleSystem.setRotation(false), null, "<")
+
         .to(".slide-3-text-3-word-3", { opacity: 0, duration: 0.5 }, "+=1")
         .to(".slide-3-text-3-title", { opacity: 0, duration: 0.5 }, "<") // Fade out title too
 
@@ -296,6 +321,7 @@ const Story = ({ isReady, onStoryEnd }) => {
           },
           "<"
         )
+
         .to(
           cam.position,
           { z: -220 * dFactor, x: -60 * dFactor, y: 0, duration: 3, ease: "power1.inOut" },
