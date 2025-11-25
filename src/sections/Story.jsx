@@ -321,7 +321,7 @@ const Story = ({ isReady, onStoryEnd }) => {
           particleState,
           {
             amplitude: 60,
-            color: "#ff4500", // Fire Orange
+            color: "#CC801A",
             onUpdate: updateParticles,
             duration: 3,
           },
@@ -365,12 +365,7 @@ const Story = ({ isReady, onStoryEnd }) => {
           "+=0.5"
         )
         // --- SCENE 7: The Flash & Morph ---
-        // Zoom In + Flash
-        .to(cam.position, { z: -10 * dFactor, x: 0, y: 0, duration: 2, ease: "power2.in" }, "+=15")
-        .to(controls.target, { x: 0, y: 0, z: 0, duration: 2, ease: "power2.in" }, "<")
-        .to("#white-overlay", { opacity: 1, duration: 1 }, "+=2") // Flash at end of zoom
-
-        // Morph (Hidden)
+        // Morph
         .call(
           () => {
             if (tl.scrollTrigger.direction > 0) {
@@ -380,15 +375,11 @@ const Story = ({ isReady, onStoryEnd }) => {
             }
           },
           null,
-          ">"
+          "+=5"
         )
 
-        // Zoom Out + Reveal
-        .to(cam.position, { z: -450 * dFactor, duration: 3, ease: "power2.out" }, "+=3")
-        .to("#white-overlay", { opacity: 0, duration: 0.5 }, "<") // Fade out overlay to reveal
-
         // --- SCENE 8: Ending Text ---
-        .to(".slide-3-text-9", { opacity: 1, duration: 1 }, "-=1") // Fade in text as zoom finishes
+        .to(".slide-3-text-9", { opacity: 1, duration: 1 }, "+=5") // Fade in text as zoom finishes
         .to("#slide-3", { opacity: 0, duration: 1 }, "+=3"); // End
     }, containerRef);
 
@@ -565,7 +556,9 @@ const Story = ({ isReady, onStoryEnd }) => {
             <div className="text-3xl md:text-5xl font-bold mix-blend-difference mb-4">
               The Story Ends Here.
             </div>
-            <div className="text-xl md:text-2xl opacity-80">But creation continues.</div>
+            <div className="text-xl md:text-2xl opacity-80">
+              Try out different particle shapes and interact with them!
+            </div>
           </div>
         </div>
       </Slide>
@@ -579,14 +572,11 @@ const Story = ({ isReady, onStoryEnd }) => {
         className="absolute inset-0 flex justify-center items-center opacity-0 pointer-events-none z-50">
         <div className="text-black text-center">
           <h1 className="text-6xl md:text-8xl font-bold mb-4">Playground</h1>
-          <p className="text-xl md:text-2xl">Interact with the particles.</p>
+          <p className="text-xl md:text-2xl">Have fun</p>
         </div>
       </div>
     </div>
   );
 };
-// particleSystem.setAmplitude(120, 2, "sine.inOut");
-// particleSystem.setColor("#ffffff", 2, "sine.inOut");
-// particleSystem.setRotation(true);
-// camera.animateCameraTo({ position: new THREE.Vector3(0, 0, -600) }, 2, "sine.inOut");
+
 export default Story;

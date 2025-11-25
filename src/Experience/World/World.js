@@ -1,7 +1,7 @@
 import Experience from "../Experience.js";
 import Environment from "./Environment.js";
 import Page from "./Page.js";
-// import Sun from "./Sun.js";
+
 
 export default class World {
   constructor() {
@@ -22,48 +22,14 @@ export default class World {
 
       // Setup
       this.page = new Page();
-      //this.sun = new Sun();
       this.environment = new Environment();
 
-      // Remove preloader
-      // if (this.html.preloader) {
-      //   this.html.preloader.classList.add("preloaded");
-      //   this.html.preloader.remove();
-      // }
-      // if (this.html.playButton) this.html.playButton.remove();
 
-      // Animation timeline
       this.animationPipeline();
-
-      //this.html.playButton.addEventListener('click', () => {
-
-      //this.html.playButton.classList.replace("fade-in", "fade-out");
-      //this.sound.createSounds();
-
-      //     setTimeout(() => {
-      //         this.experience.time.start = Date.now()
-      //         this.experience.time.elapsed = 0
-      //
-      //         // Setup
-      //         this.environment = new Environment()
-      //
-      //         // Remove preloader
-      //         this.html.preloader.classList.add("preloaded");
-      //         setTimeout(() => {
-      //             this.html.preloader.remove();
-      //             this.html.playButton.remove();
-      //         }, 2500);
-      //
-      //         // Animation timeline
-      //         this.animationPipeline();
-      //     }, 100);
-      // //}, { once: true });
     });
   }
   // Intro animation of splash screen
   animationPipeline() {
-    // if ( this.text )
-    //     this.text.animateTextShow()
     this.camera.animateCamera(
       2.5, // duration
       { z: -3500, x: 100, y: 150 }, // fromProps (start z at -3500)

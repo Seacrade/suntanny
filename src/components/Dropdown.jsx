@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 const Dropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(0);
+  const [showProposal, setShowProposal] = useState(false);
   const dropdownRef = useRef(null);
 
   const options = [
@@ -18,6 +19,9 @@ const Dropdown = () => {
     setIsOpen(false);
     if (window.experience && window.experience.world && window.experience.world.page) {
       window.experience.world.page.morph(value);
+    }
+    if (value === 5) {
+      setShowProposal(true);
     }
   };
 
@@ -63,6 +67,21 @@ const Dropdown = () => {
               {option.label}
             </button>
           ))}
+        </div>
+      )}
+
+      {showProposal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/80 z-[100] backdrop-blur-sm pointer-events-auto">
+          <div className="bg-white p-8 rounded-2xl text-center space-y-6 max-w-md mx-4 animate-in fade-in zoom-in duration-300">
+            <p className="text-black text-2xl font-bold font-serif">
+              hi tanny, wanna go to polyball with me?
+            </p>
+            <button
+              onClick={() => setShowProposal(false)}
+              className="px-8 py-3 bg-pink-500 text-white rounded-full font-bold hover:bg-pink-600 transition-colors shadow-lg hover:scale-105 transform duration-200">
+              yes please onichan
+            </button>
+          </div>
         </div>
       )}
     </div>
