@@ -10,18 +10,13 @@ const Dropdown = () => {
     { value: 1, label: "Cube" },
     { value: 2, label: "Yin Yang" },
     { value: 3, label: "Torus" },
-    { value: 4, label: "DNA" },
     { value: 5, label: "Heart" },
   ];
 
   const handleSelect = (value) => {
     setSelectedOption(value);
     setIsOpen(false);
-    if (
-      window.experience &&
-      window.experience.world &&
-      window.experience.world.page
-    ) {
+    if (window.experience && window.experience.world && window.experience.world.page) {
       window.experience.world.page.morph(value);
     }
   };
@@ -40,8 +35,7 @@ const Dropdown = () => {
     };
   }, []);
 
-  const currentLabel =
-    options.find((opt) => opt.value === selectedOption)?.label || "Sphere";
+  const currentLabel = options.find((opt) => opt.value === selectedOption)?.label || "Sphere";
 
   return (
     <div className="fixed top-12 left-10 z-50" ref={dropdownRef}>
@@ -50,9 +44,7 @@ const Dropdown = () => {
         className="px-6 py-2 text-white border border-white/30 rounded-full font-migha font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300 pointer-events-auto backdrop-blur-sm flex items-center gap-2 min-w-[160px] justify-between">
         <span>{currentLabel}</span>
         <span
-          className={`transform transition-transform duration-300 ${
-            isOpen ? "rotate-180" : ""
-          }`}>
+          className={`transform transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}>
           ▼
         </span>
       </button>

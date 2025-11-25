@@ -5,7 +5,6 @@ uniform sampler2D uTexture;
 uniform sampler2D uTarget;
 uniform sampler2D uTarget2;
 uniform sampler2D uTarget3;
-uniform sampler2D uTarget4;
 uniform sampler2D uTarget5;
 uniform sampler2D uTarget6;
 uniform int uState1;
@@ -225,7 +224,6 @@ vec3 getTarget(int state) {
     if (state == 1) return texture2D(uTarget, vUv).xyz;
     if (state == 2) return texture2D(uTarget2, vUv).xyz;
     if (state == 3) return texture2D(uTarget3, vUv).xyz;
-    if (state == 4) return texture2D(uTarget4, vUv).xyz;
     if (state == 5) return texture2D(uTarget5, vUv).xyz;
     if (state == 6) return texture2D(uTarget6, vUv).xyz;
     return texture2D(uTexture, vUv).xyz; // State 0 or fallback

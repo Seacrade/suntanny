@@ -1,12 +1,4 @@
-import {
-  getSphere,
-  getCube,
-  getYinYang,
-  getDNA,
-  getHeart,
-  getTorus,
-  getWave,
-} from "./Geometry.js";
+import { getSphere, getCube, getYinYang, getHeart, getTorus, getWave } from "./Geometry.js";
 
 self.onmessage = (e) => {
   const { type, config } = e.data;
@@ -18,10 +10,9 @@ self.onmessage = (e) => {
     try {
       // Sphere
       const sphereData = getSphere(count, sizes.sphere);
-      self.postMessage(
-        { type: "asset", name: "sphereData", data: sphereData },
-        [sphereData.buffer]
-      );
+      self.postMessage({ type: "asset", name: "sphereData", data: sphereData }, [
+        sphereData.buffer,
+      ]);
 
       // Cube
       const cubeData = getCube(count, sizes.cube);
@@ -32,23 +23,16 @@ self.onmessage = (e) => {
 
       // YinYang
       const yinYangData = getYinYang(count, sizes.yinYang);
-      self.postMessage(
-        { type: "asset", name: "yinYangData", data: yinYangData },
-        [yinYangData.positions.buffer, yinYangData.colors.buffer]
-      );
+      self.postMessage({ type: "asset", name: "yinYangData", data: yinYangData }, [
+        yinYangData.positions.buffer,
+        yinYangData.colors.buffer,
+      ]);
 
       // Torus
       const torusData = getTorus(count, sizes.torus.radius, sizes.torus.tube);
       self.postMessage({ type: "asset", name: "torusData", data: torusData }, [
         torusData.positions.buffer,
         torusData.colors.buffer,
-      ]);
-
-      // DNA
-      const dnaData = getDNA(count, sizes.dna.radius, sizes.dna.height);
-      self.postMessage({ type: "asset", name: "dnaData", data: dnaData }, [
-        dnaData.positions.buffer,
-        dnaData.colors.buffer,
       ]);
 
       // Heart

@@ -41,7 +41,6 @@ export default class ParticleSystem {
       "cubeData",
       "yinYangData",
       "torusData",
-      "dnaData",
       "heartData",
       "waveData",
     ];
@@ -73,15 +72,7 @@ export default class ParticleSystem {
   }
 
   handleWorkerData(data) {
-    const {
-      sphereData,
-      cubeData,
-      yinYangData,
-      torusData,
-      dnaData,
-      heartData,
-      waveData,
-    } = data;
+    const { sphereData, cubeData, yinYangData, torusData, heartData, waveData } = data;
 
     const width = CONFIG.width;
     const height = CONFIG.height;
@@ -93,22 +84,9 @@ export default class ParticleSystem {
     texture.wrapT = THREE.RepeatWrapping;
 
     const targetTexture = createDataTexture(cubeData.positions, width, height);
-    const targetTexture2 = createDataTexture(
-      yinYangData.positions,
-      width,
-      height
-    );
-    const targetTexture3 = createDataTexture(
-      torusData.positions,
-      width,
-      height
-    );
-    const targetTexture4 = createDataTexture(dnaData.positions, width, height);
-    const targetTexture5 = createDataTexture(
-      heartData.positions,
-      width,
-      height
-    );
+    const targetTexture2 = createDataTexture(yinYangData.positions, width, height);
+    const targetTexture3 = createDataTexture(torusData.positions, width, height);
+    const targetTexture5 = createDataTexture(heartData.positions, width, height);
     const targetTexture6 = createDataTexture(waveData.positions, width, height);
 
     this.simulationShader = new THREE.ShaderMaterial({
@@ -117,7 +95,6 @@ export default class ParticleSystem {
         uTarget: { type: "t", value: targetTexture },
         uTarget2: { type: "t", value: targetTexture2 },
         uTarget3: { type: "t", value: targetTexture3 },
-        uTarget4: { type: "t", value: targetTexture4 },
         uTarget5: { type: "t", value: targetTexture5 },
         uTarget6: { type: "t", value: targetTexture6 },
         uState1: { type: "i", value: 6 }, // Start with Wave (6)
@@ -137,9 +114,7 @@ export default class ParticleSystem {
         positions: { type: "t", value: null },
         uPointSize: { type: "f", value: CONFIG.sizes.point },
         uPixelRatio: {
-          value:
-            Math.min(window.devicePixelRatio, 2) *
-            (window.innerWidth < 768 ? 0.5 : 1),
+          value: Math.min(window.devicePixelRatio, 2) * (window.innerWidth < 768 ? 0.5 : 1),
         },
         uColor: { value: CONFIG.colors.primary },
         uState1: { type: "i", value: 6 }, // Start with Wave (6)
@@ -162,13 +137,7 @@ export default class ParticleSystem {
       blending: THREE.AdditiveBlending,
     });
 
-    this.FBO = new FBO(
-      width,
-      height,
-      this.renderer,
-      this.simulationShader,
-      this.renderShader
-    );
+    this.FBO = new FBO(width, height, this.renderer, this.simulationShader, this.renderShader);
 
     this.FBO.particles.geometry.setAttribute(
       "aTargetColor",
@@ -181,10 +150,6 @@ export default class ParticleSystem {
     this.FBO.particles.geometry.setAttribute(
       "aTargetColor3",
       new THREE.BufferAttribute(torusData.colors, 3)
-    );
-    this.FBO.particles.geometry.setAttribute(
-      "aTargetColor4",
-      new THREE.BufferAttribute(dnaData.colors, 3)
     );
     this.FBO.particles.geometry.setAttribute(
       "aTargetColor5",
@@ -263,8 +228,7 @@ export default class ParticleSystem {
     if (!this.isReady) return;
     this.FBO.resize(CONFIG.width, CONFIG.height);
     this.renderShader.uniforms.uPixelRatio.value =
-      Math.min(window.devicePixelRatio, 2) *
-      (window.innerWidth < 768 ? 0.5 : 1);
+      Math.min(window.devicePixelRatio, 2) * (window.innerWidth < 768 ? 0.5 : 1);
   }
 
   update() {
@@ -274,8 +238,7 @@ export default class ParticleSystem {
     this.simulationShader.uniforms.timer.value += 0.01;
 
     if (this.rotationEnabled) {
-      this.FBO.particles.rotation.x =
-        ((Math.cos(Date.now() * 0.001) * Math.PI) / 180) * 2;
+      this.FBO.particles.rotation.x = ((Math.cos(Date.now() * 0.001) * Math.PI) / 180) * 2;
       this.FBO.particles.rotation.y -= (Math.PI / 180) * 0.05;
     } else {
       this.FBO.particles.rotation.x = 0;

@@ -63,10 +63,7 @@ export default class Renderer {
      * Passes
      */
     // Render pass
-    this.postProcess.renderPass = new RenderPass(
-      this.scene,
-      this.camera.instance
-    );
+    this.postProcess.renderPass = new RenderPass(this.scene, this.camera.instance);
 
     // Bloom pass
     this.postProcess.unrealBloomPass = new UnrealBloomPass(
@@ -86,8 +83,7 @@ export default class Renderer {
     this.postProcess.unrealBloomPass.compositeMaterial.uniforms.uTintColor = {
       value: this.postProcess.unrealBloomPass.tintColor.instance,
     };
-    this.postProcess.unrealBloomPass.compositeMaterial.uniforms.uTintStrength =
-      { value: 0.15 };
+    this.postProcess.unrealBloomPass.compositeMaterial.uniforms.uTintStrength = { value: 0.15 };
     this.postProcess.unrealBloomPass.compositeMaterial.fragmentShader = `
 varying vec2 vUv;
 uniform sampler2D blurTexture1;
@@ -124,22 +120,15 @@ void main() {
      * Effect composer
      */
 
-    this.renderTarget = new THREE.WebGLRenderTarget(
-      this.sizes.width,
-      this.sizes.height,
-      {
-        generateMipmaps: false,
-        minFilter: THREE.LinearFilter,
-        magFilter: THREE.LinearFilter,
-        format: THREE.RGBAFormat,
-        colorSpace: THREE.SRGBColorSpace,
-        samples: this.instance.getPixelRatio() === 1 ? 2 : 0,
-      }
-    );
-    this.postProcess.composer = new EffectComposer(
-      this.instance,
-      this.renderTarget
-    );
+    this.renderTarget = new THREE.WebGLRenderTarget(this.sizes.width, this.sizes.height, {
+      generateMipmaps: false,
+      minFilter: THREE.LinearFilter,
+      magFilter: THREE.LinearFilter,
+      format: THREE.RGBAFormat,
+      colorSpace: THREE.SRGBColorSpace,
+      samples: this.instance.getPixelRatio() === 1 ? 2 : 0,
+    });
+    this.postProcess.composer = new EffectComposer(this.instance, this.renderTarget);
     this.postProcess.composer.setSize(this.sizes.width, this.sizes.height);
     this.postProcess.composer.setPixelRatio(this.sizes.pixelRatio);
 
@@ -189,8 +178,7 @@ void main() {
         });
 
       debugFolder.addBinding(
-        this.postProcess.unrealBloomPass.compositeMaterial.uniforms
-          .uTintStrength,
+        this.postProcess.unrealBloomPass.compositeMaterial.uniforms.uTintStrength,
         "value",
         { label: "uTintStrength", min: 0, max: 1, step: 0.001 }
       );

@@ -10,6 +10,7 @@ import SplashScreen from "./components/SplashScreen";
 const App = () => {
   const [isReady, setIsReady] = useState(false);
   const [storyStarted, setStoryStarted] = useState(false);
+  const [storyEnded, setStoryEnded] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
   const splashRef = useRef(null);
 
@@ -43,23 +44,23 @@ const App = () => {
       const camera = window.experience.camera;
 
       // Morph to Sphere (0)
-      particleSystem.morph(0, 3, "sine.inOut");
+      particleSystem.morph(0, 2, "sine.inOut");
 
       // Animate to Story start state
-      particleSystem.setAmplitude(1, 2, "sine.inOut");
+      particleSystem.setAmplitude(200, 1.5, "sine.inOut");
       particleSystem.setColor("#000000", 0.2, "sine.inOut");
-      particleSystem.setRotation(true);
+      particleSystem.setRotation(false);
 
       // Move camera to Story start position
-      camera.animateCameraTo({ x: 50, y: 50, z: -100 }, 2, "power2.inOut");
+      camera.animateCameraTo({ x: 0, y: 0, z: -150 }, 2, "sine.inOut");
     }
 
     // Animate Splash Out
     if (splashRef.current) {
       gsap.to(splashRef.current, {
         opacity: 0,
-        duration: 1.5,
-        ease: "power2.inOut",
+        duration: 2.2,
+        ease: "sine.inOut",
         onComplete: () => {
           setShowSplash(false);
           setStoryStarted(true); // Mount Story only after splash is gone to prevent layout shift
@@ -75,9 +76,7 @@ const App = () => {
     <div className="relative w-full min-h-screen z-10 pointer-events-none">
       <LoadingScreen started={isReady} setStarted={setIsReady} />
       {isReady && showSplash && (
-        <div
-          ref={splashRef}
-          className="pointer-events-auto absolute inset-0 z-50">
+        <div ref={splashRef} className="pointer-events-auto absolute inset-0 z-50">
           <SplashScreen onStart={handleStart} />
         </div>
       )}
@@ -86,8 +85,11 @@ const App = () => {
       {storyStarted && (
         <>
           <Navbar />
-          <Dropdown />
-          <Story isReady={isReady} />
+          {storyEnded && <Dropdown />}
+          {/* Wrapper div to isolate GSAP pinning from React DOM operations */}
+          <div className="w-full">
+            <Story isReady={isReady} onStoryEnd={() => setStoryEnded(true)} />
+          </div>
         </>
       )}
     </div>

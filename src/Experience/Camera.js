@@ -26,7 +26,14 @@ export default class Camera {
       0.1,
       10000
     );
-    this.defaultCameraPosition = new THREE.Vector3(0, 0, -400);
+
+    // Adjust default position based on screen width
+    const isMobile = this.sizes.width < 768;
+    const baseZ = -400;
+    // Move camera further back on mobile to maintain framing
+    const mobileZ = -650;
+
+    this.defaultCameraPosition = new THREE.Vector3(0, 0, isMobile ? mobileZ : baseZ);
 
     this.instance.position.copy(this.defaultCameraPosition);
     this.instance.lookAt(new THREE.Vector3(0, 0, 0));
@@ -48,11 +55,11 @@ export default class Camera {
       const pos = this.instance.position;
       const target = this.controls.target;
       console.log(
-        `Position: { x: ${Math.round(pos.x)}, y: ${Math.round(
-          pos.y
-        )}, z: ${Math.round(pos.z)} } | Target: { x: ${Math.round(
-          target.x
-        )}, y: ${Math.round(target.y)}, z: ${Math.round(target.z)} }`
+        `Position: { x: ${Math.round(pos.x)}, y: ${Math.round(pos.y)}, z: ${Math.round(
+          pos.z
+        )} } | Target: { x: ${Math.round(target.x)}, y: ${Math.round(target.y)}, z: ${Math.round(
+          target.z
+        )} }`
       );
     });
 

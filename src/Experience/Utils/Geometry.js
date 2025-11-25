@@ -154,35 +154,7 @@ export function getYinYang(count, radius) {
   return { positions, colors };
 }
 
-export function getDNA(count, radius, height) {
-  const positions = new Float32Array(count * 4);
-  const colors = new Float32Array(count * 3);
-  const c1 = COLORS.cyan;
-  const c2 = COLORS.magenta;
-
-  for (let i = 0; i < count; i++) {
-    const t = Math.random();
-    const angle = t * Math.PI * 8; // 4 turns
-
-    const strand = Math.random() > 0.5 ? 0 : 1;
-    const phase = strand === 0 ? 0 : Math.PI;
-
-    const x = Math.cos(angle + phase) * radius;
-    const z = Math.sin(angle + phase) * radius;
-    const y = (t - 0.5) * height;
-
-    positions[i * 4 + 0] = x;
-    positions[i * 4 + 1] = y;
-    positions[i * 4 + 2] = z;
-    positions[i * 4 + 3] = 0;
-
-    const c = strand === 0 ? c1 : c2;
-    colors[i * 3 + 0] = c.r;
-    colors[i * 3 + 1] = c.g;
-    colors[i * 3 + 2] = c.b;
-  }
-  return { positions, colors };
-}
+// DNA Removed
 
 export function getHeart(count, scale) {
   const positions = new Float32Array(count * 4);
@@ -214,7 +186,8 @@ export function getHeart(count, scale) {
 export function getTorus(count, R, r) {
   const positions = new Float32Array(count * 4);
   const colors = new Float32Array(count * 3);
-  const c = COLORS.lime;
+  const c1 = COLORS.cyan;
+  const c2 = COLORS.magenta;
 
   for (let i = 0; i < count; i++) {
     const u = Math.random() * Math.PI * 2;
@@ -229,6 +202,8 @@ export function getTorus(count, R, r) {
     positions[i * 4 + 2] = z;
     positions[i * 4 + 3] = 0;
 
+    // Mix colors like the DNA used to
+    const c = Math.random() > 0.5 ? c1 : c2;
     colors[i * 3 + 0] = c.r;
     colors[i * 3 + 1] = c.g;
     colors[i * 3 + 2] = c.b;
