@@ -74,7 +74,7 @@ const Dropdown = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black/80 z-[100] backdrop-blur-sm pointer-events-auto">
           <div className="bg-white p-8 rounded-2xl text-center space-y-6 max-w-md mx-4 animate-in fade-in zoom-in duration-300">
             <p className="text-black text-2xl font-bold font-serif">
-              hi tanny, wanna go to polyball with me?
+              hi tanny, would you like to go to polyball with me?
             </p>
             <button
               onClick={() => setShowProposal(false)}
