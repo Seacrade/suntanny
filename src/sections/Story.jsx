@@ -42,6 +42,9 @@ const Story = ({ isReady, onStoryEnd }) => {
       gsap.killTweensOf(cam.position);
       gsap.killTweensOf(controls.target);
 
+      // Disable controls during story
+      controls.enabled = false;
+
       // Master Timeline
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -50,6 +53,15 @@ const Story = ({ isReady, onStoryEnd }) => {
           end: "+=9999", // Long scroll distance for smooth pacing
           scrub: 2,
           pin: true,
+          onLeave: () => {
+            controls.enabled = true;
+            if (containerRef.current) containerRef.current.style.pointerEvents = "none";
+            if (onStoryEnd) onStoryEnd();
+          },
+          onEnterBack: () => {
+            controls.enabled = false;
+            if (containerRef.current) containerRef.current.style.pointerEvents = "auto";
+          },
         },
       });
 
@@ -377,8 +389,7 @@ const Story = ({ isReady, onStoryEnd }) => {
 
         // --- SCENE 8: Ending Text ---
         .to(".slide-3-text-9", { opacity: 1, duration: 1 }, "-=1") // Fade in text as zoom finishes
-        .to("#slide-3", { opacity: 0, duration: 1 }, "+=3") // End
-        .call(() => onStoryEnd && onStoryEnd());
+        .to("#slide-3", { opacity: 0, duration: 1 }, "+=3"); // End
     }, containerRef);
 
     return () => ctx.revert();
@@ -387,7 +398,7 @@ const Story = ({ isReady, onStoryEnd }) => {
   return (
     <div
       ref={containerRef}
-      className="h-screen w-full relative overflow-hidden font-serif text-white z-20">
+      className="h-screen w-full relative overflow-hidden font-serif text-white z-20 pointer-events-auto">
       {/* Intro Slide: Auto Fade In */}
       <div
         id="intro-slide"

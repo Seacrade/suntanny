@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
-import Navbar from "./sections/Navbar";
 import Story from "./sections/Story";
 import { LoadingScreen } from "./components/LoadingScreen";
 import Dropdown from "./components/Dropdown";
 import ParticleSection from "./components/ParticleSection";
 import SplashScreen from "./components/SplashScreen";
+import ScrollProgress from "./components/ScrollProgress";
 
 const App = () => {
   const [isReady, setIsReady] = useState(false);
@@ -84,7 +84,7 @@ const App = () => {
 
       {storyStarted && (
         <>
-          <Navbar />
+          <ScrollProgress />
           {storyEnded && <Dropdown />}
           {/* Wrapper div to isolate GSAP pinning from React DOM operations */}
           <div className="w-full">
