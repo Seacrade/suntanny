@@ -159,7 +159,7 @@ const Story = ({ isReady, onStoryEnd }) => {
             amplitude: 250,
             color: "#ffffff",
             onUpdate: updateParticles,
-            duration: 6,
+            duration: 10,
           },
           ">2"
         )
@@ -169,10 +169,10 @@ const Story = ({ isReady, onStoryEnd }) => {
             x: 50 * dFactor,
             y: -100 * dFactor,
             z: -150 * dFactor,
-            duration: 2,
+            duration: 5,
             ease: "sine.inOut",
           },
-          "<"
+          "+=1"
         )
         // Move 2: Focus Right (Text 3) - Pan Left
         .to(".slide-2-text-3", { opacity: 1, duration: 2 }, "+=1") //5
@@ -303,7 +303,7 @@ const Story = ({ isReady, onStoryEnd }) => {
 
         // 3.4: A World Without Life
 
-        .to(cam.position, { x: 0, y: 0, z: -500 * dFactor, duration: 2, ease: "sine.inOut" }, "+=3")
+        .to(cam.position, { x: 0, y: 0, z: -600 * dFactor, duration: 2, ease: "sine.inOut" }, "+=3")
         .to(controls.target, { x: 0, y: 0, z: 0, duration: 2, ease: "sine.inOut" }, "<")
 
         .to(".slide-3-text-4", { opacity: 1, duration: 1 }, "<+0.5")
@@ -377,7 +377,6 @@ const Story = ({ isReady, onStoryEnd }) => {
         // --- SCENE 6: Light (White Sequence) ---
         // 6.1: Light Part 1
         .to(".slide-3-text-8-1", { opacity: 1, duration: 1 }, "<+0.5")
-        .call(() => particleSystem.setRotation(true), null, "<") // Enable rotation
 
         // 6.2: Light Part 2
         .to(".slide-3-text-8-2", { opacity: 1, duration: 1 }, "+=1")
@@ -387,9 +386,11 @@ const Story = ({ isReady, onStoryEnd }) => {
         .to(".slide-3-text-8-2", { opacity: 0, duration: 1 }, "<")
         .to(
           cam.position,
-          { z: -450 * dFactor, x: 0, y: 0, duration: 2, ease: "power2.inOut" },
-          "+=0.5"
+          { z: -650 * dFactor, x: 0, y: 0, duration: 2, ease: "power2.inOut" },
+          "+=1"
         )
+        .call(() => particleSystem.setRotation(true), null, "<") // Enable rotation
+
         // --- SCENE 7: The Flash & Morph ---
         // Morph
         .call(
@@ -401,12 +402,12 @@ const Story = ({ isReady, onStoryEnd }) => {
             }
           },
           null,
-          "+=5"
+          "+=8"
         )
 
         // --- SCENE 8: Ending Text ---
-        .to(".slide-3-text-9", { opacity: 1, duration: 1 }, "+=5") // Fade in text as zoom finishes
-        .to("#slide-3", { opacity: 0, duration: 1 }, "+=3"); // End
+        .to(".slide-3-text-9", { opacity: 1, duration: 2 }, "+=2")
+        .to("#slide-3", { opacity: 0, duration: 1 }, "+=5"); // End
     }, containerRef);
 
     return () => ctx.revert();
@@ -481,10 +482,10 @@ const Story = ({ isReady, onStoryEnd }) => {
         {/* 3.1: Awakening of Order (Right) */}
         <div className="absolute inset-0 flex justify-end items-center pr-12 md:pr-24 opacity-0 slide-3-text-1">
           <div className="text-right max-w-3xl">
-            <div className="uppercase text-3xl md:text-5xl font-bold mix-blend-difference text-red-500">
+            <div className="uppercase text-2xl md:text-4xl font-bold mix-blend-difference text-red-500">
               the yearning for order
             </div>
-            <div className="mt-4 text-xl md:text-2xl italic opacity-80">
+            <div className="max-w-xl mt-4 text-xl md:text-2xl italic opacity-100">
               The universe's instinct to reclaim its scattered chaos and control its disorder.
             </div>
           </div>
@@ -493,7 +494,7 @@ const Story = ({ isReady, onStoryEnd }) => {
         {/* 3.2: Fear of Chaos (Left) */}
         <div className="absolute inset-0 flex justify-start items-center pl-12 md:pl-24 opacity-0 slide-3-text-2">
           <div className="text-left max-w-xl">
-            <div className="text-2xl md:text-5xl font-bold mix-blend-difference text-red-400 max-w-lg">
+            <div className="text-2xl md:text-4xl font-bold mix-blend-difference text-red-500 max-w-lg">
               We are taught to fear chaos.
             </div>
             <div className="mt-4 text-xl md:text-2xl  opacity-100">
@@ -503,19 +504,19 @@ const Story = ({ isReady, onStoryEnd }) => {
         </div>
 
         {/* 3.3: Perfect Shape (Top) */}
-        <div className="absolute inset-0 flex flex-col justify-start items-center pt-32 pointer-events-none">
+        <div className="absolute inset-0 flex flex-col justify-start items-center pt-24 pointer-events-none">
           <div className="text-center max-w-2xl">
             <div className="text-3xl md:text-5xl font-bold mix-blend-difference opacity-0 slide-3-text-3-title">
               A perfect shape.
             </div>
             <div className="relative mt-4 h-8 w-full flex justify-center items-center">
-              <div className="absolute text-xl md:text-2xl italic opacity-0 slide-3-text-3-word-1">
+              <div className="absolute text-2xl md:text-3xl italic opacity-0 slide-3-text-3-word-1">
                 Complete.
               </div>
-              <div className="absolute text-xl md:text-2xl italic opacity-0 slide-3-text-3-word-2">
+              <div className="absolute text-2xl md:text-3xl italic opacity-0 slide-3-text-3-word-2">
                 Silent.
               </div>
-              <div className="absolute text-xl md:text-2xl italic opacity-0 slide-3-text-3-word-3 ">
+              <div className="absolute text-2xl md:text-3xl italic opacity-0 slide-3-text-3-word-3 ">
                 Cold.
               </div>
             </div>
@@ -525,10 +526,12 @@ const Story = ({ isReady, onStoryEnd }) => {
         {/* 3.4: A World Without Life (Bottom) */}
         <div className="absolute inset-0 flex justify-center items-end pb-12 md:pb-16 opacity-0 slide-3-text-4">
           <div className="text-center max-w-2xl px-4">
-            <div className="text-3xl md:text-5xl font-bold mix-blend-difference ">
+            <div className="text-2xl md:text-4xl font-bold mix-blend-difference ">
               A world without motion
             </div>
-            <div className="mt-4 text-xl md:text-2xl italic opacity-80">A world without life. </div>
+            <div className="mt-4 text-xl md:text-2xl italic opacity-100">
+              A world without life.{" "}
+            </div>
           </div>
         </div>
 
@@ -549,28 +552,28 @@ const Story = ({ isReady, onStoryEnd }) => {
         <div className="absolute inset-0 flex justify-start items-center pl-12 md:pl-24 opacity-0 slide-3-text-6">
           <div className="text-left max-w-xl">
             <div className="text-2xl md:text-4xl mix-blend-difference">
-              A swirling, raging fire, held together by the quiet, patient hand of gravity.
+              A raging fire, held together by the quiet hand of gravity.
             </div>
           </div>
         </div>
 
         {/* 5.1: Fire and Form (Top & Bottom) */}
         <div className="absolute inset-0 flex flex-col justify-between items-center py-32 pointer-events-none">
-          <div className="text-4xl md:text-7xl font-bold  mix-blend-difference opacity-0 slide-3-text-7-1 mt-12">
+          <div className="text-3xl md:text-5xl font-bold  mix-blend-difference opacity-0 slide-3-text-7-1 mt-12">
             Chaos gives it fire.
           </div>
-          <div className="text-4xl md:text-7xl font-bold  mix-blend-difference opacity-0 slide-3-text-7-2 mb-12">
+          <div className="text-3xl md:text-5xl font-bold  mix-blend-difference opacity-0 slide-3-text-7-2 mb-12">
             Order gives it form.
           </div>
         </div>
 
         {/* 6.1: Light (Center) */}
         <div className="absolute inset-0 flex flex-col justify-center items-center pointer-events-none">
-          <div className="text-center max-w-3xl">
+          <div className="text-center max-w-2xl">
             <div className="text-2xl md:text-4xl mix-blend-difference mb-8 opacity-0 slide-3-text-8-1">
               And only together do they give us
             </div>
-            <div className="text-2xl md:text-4xl italic opacity-0 slide-3-text-8-2">
+            <div className="text-2xl md:text-4xl  opacity-0 slide-3-text-8-2">
               what neither chaos nor order could ever create alone.
             </div>
           </div>
