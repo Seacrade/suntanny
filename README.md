@@ -1,4 +1,4 @@
-Little pet project to start learning Javascript/HTML.
+Little pet project to start learning Javascript/HTML+Tailwind.
 
 to try it out locally:
 #npm i
