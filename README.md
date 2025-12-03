@@ -7,3 +7,4 @@ to try it out locally:
 #npm run dev
 
 Have fun :)
+https://seacrade.github.io/suntanny/
